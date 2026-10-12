@@ -4,7 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Panel CLEAVER · EREA Consulting</title>
+<title>Panel de resultados DISC (CLEAVER) · EREA Consulting</title>
+<meta name="description" content="Panel privado de resultados de la evaluación DISC (CLEAVER) de EREA Consulting.">
+<meta property="og:title" content="Panel de resultados DISC (CLEAVER) · EREA Consulting">
+<meta property="og:description" content="Panel privado de resultados de la evaluación DISC (CLEAVER) de EREA Consulting.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EREA Consulting">
+<meta property="og:image" content="https://erea-consulting.github.io/cleaver-disc/assets/logo-erea.png">
+<meta name="robots" content="noindex,nofollow">
 <link rel="icon" href="assets/logo-erea.png">
 <style>
 :root{--field:#0D5E4B;--acc:#0D8B7D;--ui:#267058;--soft:#E6F2EE;--ink:#1A1A1A;--body:#333333;--mute:#666666;--line:#DBE4DD;--line2:#C4D1C7;--neg:#B4543A;--pos:#2DBA85;--alert:#F4A833;--bg:#FFFFFF;--muted:#C9D3CE}
@@ -410,8 +417,8 @@ function fmtFecha(s){var d=new Date(s);return isNaN(d)?'':d.toLocaleDateString('
 /* ---------------- login ---------------- */
 (function(){
   var h = new URLSearchParams(location.hash.slice(1));
-  $('inUrl').value = h.get('url') || ls('erea_panel_url') || (DEFAULT_ENDPOINT.indexOf('http')===0?DEFAULT_ENDPOINT:'');
-  $('inTok').value = h.get('token') || ls('erea_panel_tok') || '';
+  $('inUrl').value = h.get('url') || ls('erea_cleaver_panel_url') || (DEFAULT_ENDPOINT.indexOf('http')===0?DEFAULT_ENDPOINT:'');
+  $('inTok').value = h.get('token') || ls('erea_cleaver_panel_tok') || '';
   if (h.get('token')) history.replaceState(null,'',location.pathname);
   if ($('inUrl').value && $('inTok').value) cargar();
 })();
@@ -424,7 +431,7 @@ function cargar(){
    .then(function(j){
      $('btnLogin').textContent = 'Entrar';
      if (!j.ok) throw new Error(j.error||'Error');
-     if ($('inRem').checked){ ls('erea_panel_url',url); ls('erea_panel_tok',tok); } else { ls('erea_panel_url',null); ls('erea_panel_tok',null); }
+     if ($('inRem').checked){ ls('erea_cleaver_panel_url',url); ls('erea_cleaver_panel_tok',tok); } else { ls('erea_cleaver_panel_url',null); ls('erea_cleaver_panel_tok',null); }
      DATA = j.registros.map(function(x){ x.datos.edad_r = edadR(x.edad); return x; });
      TXT = j.textos; CLEAVER = j.textos; PERFILES = j.perfiles || [];
      DATA.forEach(function(x){ x.tp = cleaverTipoPuesto(x.r.normal); x.al = cleaverAlertas(x.r.normal); });
@@ -691,7 +698,7 @@ function calcIdeal(){
 function guardarFH(){
   if (!AJ.ideal || $('ajOrigen').value!=='nuevo'){ $('fhMsg').textContent='Complete el formulario primero.'; return; }
   $('fhMsg').textContent = 'Guardando…';
-  var url = ls('erea_panel_url') || $('inUrl').value.trim(), tok = ls('erea_panel_tok') || $('inTok').value.trim();
+  var url = ls('erea_cleaver_panel_url') || $('inUrl').value.trim(), tok = ls('erea_cleaver_panel_tok') || $('inTok').value.trim();
   fetch(url, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({action:'guardarPerfil', token: tok, perfil:{nombre:$('fhNombre').value, puesto:$('fhPuesto').value, area:$('fhArea').value, evaluador:$('fhEval').value, valores:AJ.fh.map(Number)}})})
    .then(function(r){return r.json();}).then(function(j){
      if (!j.ok) throw new Error(j.error);

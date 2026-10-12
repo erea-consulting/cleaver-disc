@@ -4,7 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Cuestionario CLEAVER · EREA Consulting</title>
+<title>Evaluación DISC (CLEAVER) · EREA Consulting</title>
+<meta name="description" content="Cuestionario de estilo conductual DISC (método CLEAVER) de EREA Consulting. 24 grupos de palabras, 10 a 15 minutos. Respuestas confidenciales.">
+<meta property="og:title" content="Evaluación DISC (CLEAVER) · EREA Consulting">
+<meta property="og:description" content="Cuestionario de estilo conductual DISC (método CLEAVER) de EREA Consulting. 24 grupos de palabras, 10 a 15 minutos. Respuestas confidenciales.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EREA Consulting">
+<meta property="og:image" content="https://erea-consulting.github.io/cleaver-disc/assets/logo-erea.png">
+<meta property="og:url" content="https://erea-consulting.github.io/cleaver-disc/">
 <link rel="icon" href="assets/logo-erea.png">
 <style>
 :root{--field:#0D5E4B;--acc:#0D8B7D;--ui:#267058;--soft:#E6F2EE;--ink:#1A1A1A;--body:#333333;--mute:#666666;--line:#DBE4DD;--line2:#C4D1C7;--neg:#B4543A;--alert:#F4A833;--bg:#FFFFFF;--card:#FFFFFF}
@@ -233,7 +240,7 @@ var GRUPOS = [[{"w": "Persuasivo", "def": "el que tiene fuerza para hacer creer 
   var LOCKED = (QS.get('bloquear')||'').split(',').map(function(s){return s.trim();}).filter(Boolean);
   var DEMO = !/^https?:\/\//.test(CONFIG.endpoint) || CONFIG.endpoint.indexOf('PEGAR_AQUI') >= 0;
   var STORE_KEY = 'erea_' + CONFIG.prueba.toLowerCase() + '_v1_' + (QS.get('empresa')||'general');
-  var QUEUE_KEY = 'erea_cola_envios';
+  var QUEUE_KEY = 'erea_' + CONFIG.prueba.toLowerCase() + '_cola_envios';
   var steps = ['portada','datos','instrucciones','grupos','revision','fin'];
 
   var st = load() || {datos:{}, resp:[], g:0, step:'portada', id:uid(), inicio:null};

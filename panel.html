@@ -117,8 +117,15 @@ input,select{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(-
 .dist span.ok{background:var(--soft);border-color:var(--acc);color:var(--field);font-weight:bold}
 .dist span.bad{border-color:var(--neg);color:var(--neg);font-weight:bold}
 .tag.alto{background:#E3F6EE;color:#17724F}.tag.medio{background:#FDF5E6;color:#8a5a00}.tag.bajo{background:#F8ECE8;color:#9a3f28}
+.rggrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.rggrid .card{margin:0}
+.rggrid h4{margin:0 0 2px;font-size:15px;color:var(--ink);display:flex;align-items:center;gap:8px}
+.rggrid .sw{display:inline-block;width:12px;height:12px;border-radius:50%}
+.rggrid .meta{font-size:12px;color:var(--mute);margin-bottom:6px}
+.rggrid p{font-size:13px;line-height:1.5;margin:8px 0 0}
+.leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px}.leg span{display:inline-flex;align-items:center;gap:6px}.leg i{width:11px;height:11px;border-radius:50%;display:inline-block}
 [hidden]{display:none!important}
-@media (max-width:900px){.grid2,.charts3,.keyw,.fhgrid,.ruedabox,.aj{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.rep .who{grid-template-columns:1fr 1fr}}
+@media (max-width:900px){.rggrid,.grid2,.charts3,.keyw,.fhgrid,.ruedabox,.aj{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.rep .who{grid-template-columns:1fr 1fr}}
 @media print{
  @page{size:A4;margin:14mm 12mm}
  body{font-size:11px}
@@ -127,6 +134,8 @@ input,select{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(-
  .charts3{grid-template-columns:repeat(3,1fr)}
  .keyw,.fhgrid{grid-template-columns:repeat(4,1fr)}
  .ruedabox{grid-template-columns:3fr 2fr}
+ .rggrid{grid-template-columns:1fr 1fr}
+ .rggrid .card{break-inside:avoid}
  .rep .who{grid-template-columns:repeat(4,1fr)}
  .grid2{grid-template-columns:1fr 1fr}
  .kpis{grid-template-columns:repeat(5,1fr)}
@@ -195,7 +204,14 @@ input,select{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(-
    <div class="src">Percentil promedio por factor; el color se intensifica a medida que el valor se aleja de 50. Grupos con menos de 5 personas se marcan con *: interpretar con cautela.</div>
   </div>
   <div class="card" style="margin-bottom:22px"><h3>Rueda de tipos de puesto · ubicación del grupo</h3><div class="ruedabox"><div id="chRueda"></div><div id="tblTipos"></div></div><div class="src">Cada punto es una persona, ubicada según su perfil Normal. Rueda Cleaver original: ejes Activo/Pasivo y Ambiente favorable/desfavorable.</div></div>
-  <div class="card" style="margin-bottom:22px"><h3>Alertas de metodología</h3><div id="tblAlertas"></div></div>
+  <div class="card" style="margin-bottom:22px" id="cardRG">
+   <div class="bar" style="margin:0 0 10px"><h3 class="grow" style="border:0;margin:0;padding:0">Rueda comparativa por <span id="rgTit">área</span></h3>
+    <label style="font-size:12px;color:var(--mute)">Comparar por&nbsp;</label><select id="rgBy" style="padding:6px 8px"></select></div>
+   <div class="ruedabox"><div id="rgRueda"></div><div><div id="rgLeyenda"></div><div id="rgTabla" style="margin-top:12px"></div></div></div>
+   <div class="src">Cada punto es una persona, con el color de su grupo. Los círculos grandes con nombre son el <b>centro de cada grupo</b> (promedio de sus perfiles Normal). Cohesión: qué tanto apuntan sus integrantes en la misma dirección (alta ≥ 0,6; media 0,3–0,6; baja &lt; 0,3).</div>
+  </div>
+  <div id="rgGrid" class="rggrid" style="margin-bottom:22px"></div>
+  <div class="card" style="margin-bottom:22px"><h3>Alertas de metodología y calidad de respuesta</h3><div id="tblAlertas"></div></div>
   <div class="card"><h3>Combinaciones más frecuentes (perfil Normal)</h3><div class="wrap" id="tblComb"></div></div>
  </section>
 
@@ -371,6 +387,38 @@ function cleaverTipoPuesto(perc) {
   return { t1: null, t2: null, vector: v };
 }
 
+/* ---------- Tipo de puesto para un ángulo cualquiera (centros de grupo) ---------- */
+function cleaverTipoAngulo(ang) {
+  ang = ((ang % 360) + 360) % 360;
+  return (CLEAVER.tiposPuesto || []).filter(function (t) { return ang >= t.desde && ang < t.hasta; })[0] || null;
+}
+
+/* ---------- Ubicación de un grupo en la rueda ----------
+   vectores: arreglo de {x, y} (cleaverVector). Devuelve el centro del grupo, su tipo de puesto
+   y la cohesión (largo medio de los vectores unitarios: 1 = todos en la misma dirección). */
+function cleaverGrupoRueda(vectores) {
+  var n = vectores.length, sx = 0, sy = 0, ux = 0, uy = 0;
+  if (!n) return null;
+  vectores.forEach(function (v) {
+    sx += v.x; sy += v.y; var m = Math.sqrt(v.x * v.x + v.y * v.y) || 1; ux += v.x / m; uy += v.y / m;
+  });
+  var x = sx / n, y = sy / n, ang = Math.atan2(y, x) * 180 / Math.PI; if (ang < 0) ang += 360;
+  var coh = Math.sqrt(ux * ux + uy * uy) / n;
+  return { x: x, y: y, ang: ang, mag: Math.sqrt(x * x + y * y), tipo: cleaverTipoAngulo(ang), cohesion: coh,
+    cohesionNivel: coh >= 0.6 ? 'alta' : (coh >= 0.3 ? 'media' : 'baja') };
+}
+
+/* ---------- Calidad de respuesta ---------- */
+var CLEAVER_MIN_MINUTOS = 5;   // por debajo de este tiempo, la respuesta se marca como rápida
+function cleaverCalidad(durMin) {
+  var d = parseFloat(durMin);
+  if (isNaN(d) || d <= 0) return null;
+  if (d < CLEAVER_MIN_MINUTOS) return { clave: 'RAPIDA', tipo: 'Respuesta rápida', min: d,
+    desc: 'Completó el cuestionario en ' + String(d).replace('.', ',') + ' min (mínimo recomendado: ' + CLEAVER_MIN_MINUTOS +
+      ' min). Puede haber respondido sin leer con atención: conviene validar el resultado con la persona o repetir la prueba.' };
+  return null;
+}
+
 /* ---------- Factor Humano (perfil del puesto) ---------- */
 // valores: arreglo de 24 números del 1 al 5, en el orden del formulario.
 function cleaverFactorHumano(valores) {
@@ -441,7 +489,9 @@ function cargar(){
      if ($('inRem').checked){ ls('erea_cleaver_panel_url',url); ls('erea_cleaver_panel_tok',tok); } else { ls('erea_cleaver_panel_url',null); ls('erea_cleaver_panel_tok',null); }
      DATA = j.registros.map(function(x){ x.datos.edad_r = edadR(x.edad); return x; });
      TXT = j.textos; CLEAVER = j.textos; PERFILES = j.perfiles || [];
-     DATA.forEach(function(x){ x.tp = cleaverTipoPuesto(x.r.normal); x.al = cleaverAlertas(x.r.normal); });
+     DATA.forEach(function(x){ x.tp = cleaverTipoPuesto(x.r.normal); x.al = cleaverAlertas(x.r.normal); x.calidad = cleaverCalidad(x.duracionMin); });
+     var vistosId = {}; DATA.forEach(function(x){ var id = String(x.datos.identidad||'').trim(); x.idRep = ''; if (!id) return; if (vistosId[id]) x.idRep = vistosId[id]; else vistosId[id] = x.folio; });
+     DATA.forEach(function(x){ x.alq = []; if (x.calidad) x.alq.push('Respuesta rápida'); if (x.idRep) x.alq.push('ID repetido'); });
      $('hdrSub').textContent = DATA.length + ' respuestas · actualizado ' + new Date(j.generado).toLocaleString('es-HN');
      $('vLogin').hidden = true; $('tabs').hidden = false;
      buildFilters(); tab('consolidado');
@@ -492,7 +542,7 @@ function renderCons(){
   $('chDom').innerHTML = svgBars(F.map(function(f){return {l:f+' · '+FN[f], v:n?100*cnt[f]/n:0, t:cnt[f]+' ('+(n?Math.round(100*cnt[f]/n):0)+'%)', hi:f===top};}));
   var avg = function(p,f){ return n ? D.reduce(function(s,x){return s+x.r[p][f];},0)/n : 0; };
   $('chAvg').innerHTML = svgGrouped([['motivacion','Motivación','#9AA5A0'],['presion','Bajo presión','#C9D3CE'],['normal','Normal','#0D8B7D']].map(function(p){return {name:p[1],color:p[2],vals:F.map(function(f){return avg(p[0],f);})};}));
-  renderSeg(D); renderComb(D); renderRuedaCons(D);
+  renderSeg(D); renderComb(D); renderRuedaCons(D); renderRG(D);
 }
 function hmColor(v){ var d = Math.min(Math.abs(v-50)/40,1); return v>=50 ? 'rgba(13,139,125,'+(0.08+0.55*d)+')' : 'rgba(180,84,58,'+(0.06+0.45*d)+')'; }
 function renderSeg(D){
@@ -553,8 +603,8 @@ function renderInd(){
   var q = ($('search').value||'').toLowerCase();
   IND_LIST = DATA.filter(function(x){ return !q || JSON.stringify(x.datos).toLowerCase().indexOf(q)>=0 || String(x.folio).toLowerCase().indexOf(q)>=0; });
   $('indCount').textContent = IND_LIST.length + ' personas';
-  $('tblInd').innerHTML = '<table class="tbl"><thead><tr><th>Folio</th><th>Nombre</th><th>ID</th><th>Área</th><th>Puesto</th><th>Sede</th><th>Fecha</th><th>Combinación (Normal)</th><th class="num">D</th><th class="num">I</th><th class="num">S</th><th class="num">C</th></tr></thead><tbody>' +
-    IND_LIST.map(function(x,i){ var d=x.datos,p=x.r.normal; return '<tr class="click" data-i="'+i+'"><td>'+esc(x.folio)+'</td><td>'+esc(d.nombre+' '+d.apellido)+'</td><td>'+esc(d.identidad)+'</td><td>'+esc(d.area)+'</td><td>'+esc(d.puesto)+'</td><td>'+esc(d.sede)+'</td><td>'+fmtFecha(x.fecha)+'</td><td>'+esc(x.r.combNormal.clave+' · '+x.r.combNormal.tipo)+'</td>'+F.map(function(f){return '<td class="num">'+p[f]+'</td>';}).join('')+'</tr>'; }).join('') + '</tbody></table>';
+  $('tblInd').innerHTML = '<table class="tbl"><thead><tr><th>Folio</th><th>Nombre</th><th>ID</th><th>Área</th><th>Puesto</th><th>Sede</th><th>Fecha</th><th>Combinación (Normal)</th><th class="num">D</th><th class="num">I</th><th class="num">S</th><th class="num">C</th><th>Alerta</th></tr></thead><tbody>' +
+    IND_LIST.map(function(x,i){ var d=x.datos,p=x.r.normal; return '<tr class="click" data-i="'+i+'"><td>'+esc(x.folio)+'</td><td>'+esc(d.nombre+' '+d.apellido)+'</td><td>'+esc(d.identidad)+'</td><td>'+esc(d.area)+'</td><td>'+esc(d.puesto)+'</td><td>'+esc(d.sede)+'</td><td>'+fmtFecha(x.fecha)+'</td><td>'+esc(x.r.combNormal.clave+' · '+x.r.combNormal.tipo)+'</td>'+F.map(function(f){return '<td class="num">'+p[f]+'</td>';}).join('')+'<td>'+(x.alq.length?'<span class="tag medio">'+esc(x.alq.join(' · '))+'</span>':'')+'</td></tr>'; }).join('') + '</tbody></table>';
 }
 $('tblInd').onclick = function(e){ var tr=e.target.closest('tr[data-i]'); if(!tr)return; showReports([IND_LIST[+tr.getAttribute('data-i')]]); };
 $('btnPrintAll').onclick = function(){ var D=filtered(); if(!D.length)return; if(D.length>80 && !confirm('Se prepararán '+D.length+' reportes para imprimir. ¿Continuar?'))return; showReports(D, true); };
@@ -577,6 +627,8 @@ function reportHTML(x){
     [['motivacion','Motivación','Cómo cree que debe comportarse (respuestas MÁS)',r.combMotivacion],['presion','Bajo presión','Cómo reacciona ante la tensión (respuestas MENOS)',r.combPresion],['normal','Normal','Su conducta cotidiana (MÁS menos MENOS)',cn]]
     .map(function(p){return '<div class="c'+(p[0]==='normal'?' main':'')+'"><div class="ct">'+p[1]+'</div><div class="cs">'+p[2]+'</div>'+svgProfile(r[p[0]],p[0]==='normal')+'<div class="cb"><b>'+p[3].clave+'</b> · '+esc(p[3].tipo)+'</div></div>';}).join('') + '</div><div class="src">Percentiles de 0 a 100. La línea punteada marca el 50: por encima, el factor es alto; por debajo, bajo.</div></div>';
   var it = TXT.interp[cn.clave] || {};
+  if (x.calidad) h += '<div class="alerta r"><b>Alerta de calidad · Respuesta rápida.</b> '+esc(x.calidad.desc)+'</div>';
+  if (x.idRep) h += '<div class="alerta r"><b>Alerta de calidad · ID repetido.</b> Esta identidad ya había respondido con el folio '+esc(x.idRep)+'. Confirmar cuál registro es válido.</div>';
   h += alertasHTML(x.al);
   h += '<div class="sec"><h3>Interpretación del perfil Normal · '+esc(cn.tipo)+' ('+cn.clave+')</h3>'+(it.matriz?'<div>'+it.matriz.split(' · ').map(function(k){return '<span class="chip">'+esc(k)+'</span>';}).join('')+'</div>':'')+
        '<p><b>Autodescripción (A.D.):</b> '+esc(cn.desc)+'</p>'+(it.fh?'<div class="fhbox"><div class="l">Factor humano (F.H.) · puestos en los que este estilo encaja</div><p style="margin:4px 0 0">'+esc(it.fh)+'</p></div>':'')+'</div>';
@@ -600,10 +652,10 @@ function reportHTML(x){
 /* ---------------- CSV ---------------- */
 $('btnCsv').onclick = function(){
   var D = filtered(), cols = ['folio','fecha','inicio','fin','duracionMin','ip','empresa','nombre','apellido','identidad','codigo','area','puesto','sede','nivel','fecha_nacimiento','edad','genero','antiguedad'];
-  var head = cols.slice(); ['motivacion','presion','normal'].forEach(function(p){F.forEach(function(f){head.push(p+'_'+f);});}); head.push('dominante','comb_normal','tipo_normal','comb_motivacion','comb_presion');
+  var head = cols.slice(); ['motivacion','presion','normal'].forEach(function(p){F.forEach(function(f){head.push(p+'_'+f);});}); head.push('dominante','comb_normal','tipo_normal','comb_motivacion','comb_presion','alerta_calidad');
   var rows = D.map(function(x){ var row = cols.map(function(c){ return ['folio','fecha','inicio','fin','duracionMin','ip','edad'].indexOf(c)>=0?x[c]:x.datos[c]; });
     ['motivacion','presion','normal'].forEach(function(p){F.forEach(function(f){row.push(x.r[p][f]);});});
-    row.push(x.r.combNormal.alto,x.r.combNormal.clave,x.r.combNormal.tipo,x.r.combMotivacion.clave,x.r.combPresion.clave); return row; });
+    row.push(x.r.combNormal.alto,x.r.combNormal.clave,x.r.combNormal.tipo,x.r.combMotivacion.clave,x.r.combPresion.clave,x.alq.join(' · ')); return row; });
   var csv = '﻿' + [head].concat(rows).map(function(r){return r.map(function(v){v=v==null?'':String(v);return /[";\n,]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(',');}).join('\n');
   var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download = 'CLEAVER_resultados.csv'; a.click();
 };
@@ -654,7 +706,73 @@ function renderRuedaCons(D){
     (TXT.tiposPuesto||[]).map(function(t){ var n=c[t.id]||0; return '<tr><td>'+t.n+'. '+esc(t.nombre)+'</td><td class="num">'+n+'</td><td class="num">'+(D.length?Math.round(100*n/D.length):0)+'%</td></tr>'; }).join('')+'</tbody></table>';
   var a = {}; D.forEach(function(x){ x.al.forEach(function(z){ a[z.clave]=(a[z.clave]||[]); a[z.clave].push(x); }); });
   var ks = Object.keys(a);
-  $('tblAlertas').innerHTML = ks.length ? '<table class="tbl"><thead><tr><th>Alerta</th><th class="num">Personas</th><th>Quiénes</th></tr></thead><tbody>'+ks.map(function(k){ var L=a[k]; return '<tr><td>'+esc(L[0].al.filter(function(z){return z.clave===k;})[0].tipo)+' ('+k+')</td><td class="num">'+L.length+'</td><td>'+L.slice(0,12).map(function(x){return esc(x.datos.nombre+' '+x.datos.apellido);}).join(', ')+(L.length>12?'…':'')+'</td></tr>'; }).join('')+'</tbody></table><div class="src">Ambivalencia: D y C al mismo nivel en el perfil Normal (alta si ambos sobre 50, baja si ambos bajo 50). Rigidez: D y S al mismo nivel.</div>' : '<p style="margin:0">Ninguna persona del grupo filtrado presenta ambivalencia (D = C) ni rigidez (D = S).</p>';
+  var rap = D.filter(function(x){return x.calidad;}), rep = D.filter(function(x){return x.idRep;});
+  var q = '<table class="tbl" style="margin-bottom:12px"><thead><tr><th>Calidad de respuesta</th><th class="num">Personas</th><th>Quiénes</th></tr></thead><tbody>'+
+    '<tr><td>Respuesta rápida (menos de '+CLEAVER_MIN_MINUTOS+' min)</td><td class="num">'+rap.length+'</td><td>'+(rap.map(function(x){return esc(x.datos.nombre+' '+x.datos.apellido)+' ('+String(x.calidad.min).replace('.',',')+' min)';}).join(', ')||'—')+'</td></tr>'+
+    '<tr><td>ID repetido</td><td class="num">'+rep.length+'</td><td>'+(rep.map(function(x){return esc(x.folio+' repite '+x.idRep);}).join(', ')||'—')+'</td></tr></tbody></table>'+
+    '<div class="src" style="margin:-6px 0 12px">Respuesta rápida: completó el cuestionario en menos de '+CLEAVER_MIN_MINUTOS+' minutos; validar el resultado antes de usarlo. ID repetido: la misma identidad respondió más de una vez; normalmente se conserva el primer registro.</div>';
+  $('tblAlertas').innerHTML = q + (ks.length ? '<table class="tbl"><thead><tr><th>Alerta</th><th class="num">Personas</th><th>Quiénes</th></tr></thead><tbody>'+ks.map(function(k){ var L=a[k]; return '<tr><td>'+esc(L[0].al.filter(function(z){return z.clave===k;})[0].tipo)+' ('+k+')</td><td class="num">'+L.length+'</td><td>'+L.slice(0,12).map(function(x){return esc(x.datos.nombre+' '+x.datos.apellido);}).join(', ')+(L.length>12?'…':'')+'</td></tr>'; }).join('')+'</tbody></table><div class="src">Ambivalencia: D y C al mismo nivel en el perfil Normal (alta si ambos sobre 50, baja si ambos bajo 50). Rigidez: D y S al mismo nivel.</div>' : '<p style="margin:0">Ninguna persona del grupo filtrado presenta ambivalencia (D = C) ni rigidez (D = S).</p>');
+}
+
+/* ---------------- rueda comparativa por grupo ---------------- */
+var GCOL = ['#0D5E4B','#E07A2E','#3B6FB6','#B4543A','#8E5BA8','#2DBA85','#C9A227','#5E6B73','#D0688F','#4FA3C7','#7A9A3A','#9C6B3E'];
+function initRG(){
+  if (initRG.done) return; initRG.done = true;
+  $('rgBy').innerHTML = DIMS.filter(function(d){return d[0]!=='empresa';}).map(function(d){return '<option value="'+d[0]+'"'+(d[0]==='area'?' selected':'')+'>'+d[1]+'</option>';}).join('');
+  $('rgBy').onchange = function(){ renderRG(filtered()); };
+}
+function cuadranteTxt(G){
+  if (G.mag < 10) return {zona:'cerca del centro de la rueda', sent:'los estilos están repartidos y el grupo no comparte una orientación clara'};
+  var act = G.y > 0, fav = G.x > 0;
+  if (act && !fav) return {zona:'zona Activa · ambiente desfavorable (D)', sent:'predomina la orientación a resultados, la iniciativa y los retos; el grupo se siente cómodo en entornos exigentes o competitivos'};
+  if (act && fav) return {zona:'zona Activa · ambiente favorable (I)', sent:'predomina la orientación a las personas, la comunicación y la persuasión; rinde mejor con contacto y reconocimiento'};
+  if (!act && fav) return {zona:'zona Pasiva · ambiente favorable (S)', sent:'predomina la orientación al servicio, la constancia y el trabajo en equipo; prefiere ritmos estables y reglas claras de convivencia'};
+  return {zona:'zona Pasiva · ambiente desfavorable (C)', sent:'predomina la orientación a la precisión, el método y el cumplimiento de normas; prefiere procesos definidos'};
+}
+function interpGrupo(nombre, L, G, T){
+  var n = L.length, c = {};
+  L.forEach(function(x){ if (x.tp.t1) c[x.tp.t1.id]=(c[x.tp.t1.id]||0)+1; });
+  var ks = Object.keys(c).sort(function(a,b){return c[b]-c[a];});
+  var t1 = tipoPorId(ks[0]), t2 = ks[1] ? tipoPorId(ks[1]) : null, q = cuadranteTxt(G);
+  var txt = '<b>'+esc(nombre)+'</b> ('+n+' '+(n===1?'persona':'personas')+')'+(n<5?' — <i>muestra pequeña: interpretar con cautela</i>':'')+'. ';
+  txt += G.mag < 10 ? 'El centro del grupo queda '+q.zona+': '+q.sent+'. ' : 'El centro del grupo cae en <b>'+(G.tipo?G.tipo.n+'. '+esc(G.tipo.nombre):'—')+'</b>, '+q.zona+': '+q.sent+'. ';
+  if (n > 1) txt += 'La cohesión es <b>'+G.cohesionNivel+'</b> ('+G.cohesion.toFixed(2).replace('.',',')+'): '+(G.cohesionNivel==='alta'?'la mayoría apunta en la misma dirección, hay un estilo compartido.':(G.cohesionNivel==='media'?'hay una tendencia común, pero con variedad de estilos.':'los estilos son muy diversos; el promedio dice poco y conviene mirar a cada persona.'))+' ';
+  if (t1) txt += 'El tipo de puesto afín más frecuente es <b>'+esc(t1.nombre)+'</b> ('+Math.round(100*c[t1.id]/n)+'%)'+(t2?', seguido de '+esc(t2.nombre)+' ('+Math.round(100*c[t2.id]/n)+'%)':'')+'. '+esc(t1.desc)+' ';
+  if (T && n > 1){
+    var dy = G.y - T.y, dx = G.x - T.x, d = [];
+    if (Math.abs(dy) >= 10) d.push(dy > 0 ? 'más activo' : 'más pasivo');
+    if (Math.abs(dx) >= 10) d.push(dx > 0 ? 'más orientado a un ambiente favorable (personas)' : 'más orientado a un ambiente desfavorable (tareas y retos)');
+    txt += 'Frente al total, el grupo es ' + (d.length ? d.join(' y ') : 'similar al promedio general') + '.';
+  }
+  if (n >= 3 && G.cohesionNivel !== 'baja'){
+    var fuera = L.filter(function(x){ var a = Math.abs(x.tp.vector.ang - G.ang) % 360; if (a > 180) a = 360 - a; return a > 120; });
+    if (fuera.length) txt += ' <b>Fuera del patrón del grupo:</b> '+fuera.slice(0,6).map(function(x){return esc(x.datos.nombre+' '+x.datos.apellido)+' ('+(x.tp.t1?esc(x.tp.t1.nombre):'')+')';}).join(', ')+(fuera.length>6?'…':'')+'.';
+  }
+  return {html: txt, t1: t1 ? t1.id : null, c: c};
+}
+function centroTxt(G){ return !G ? '—' : (G.mag < 10 ? 'Cerca del centro (sin orientación clara)' : (G.tipo ? G.tipo.n+'. '+esc(G.tipo.nombre) : '—')); }
+function renderRG(D){
+  initRG();
+  var by = $('rgBy').value, g = {};
+  $('rgTit').textContent = $('rgBy').selectedOptions[0].text.toLowerCase();
+  D.forEach(function(x){ var k = x.datos[by]||'Sin dato'; (g[k]=g[k]||[]).push(x); });
+  var keys = Object.keys(g).sort(function(a,b){ return g[b].length-g[a].length || (a<b?-1:1); });
+  var col = {}; keys.forEach(function(k,i){ col[k] = GCOL[i % GCOL.length]; });
+  var T = cleaverGrupoRueda(D.map(function(x){return x.tp.vector;}));
+  var info = keys.map(function(k){ var G = cleaverGrupoRueda(g[k].map(function(x){return x.tp.vector;})); return {k:k, L:g[k], G:G, I:interpGrupo(k, g[k], G, T)}; });
+  var pts = [];
+  D.forEach(function(x){ pts.push({v:x.tp.vector, color:col[x.datos[by]||'Sin dato'], label:x.datos.nombre+' '+x.datos.apellido+' · '+(x.datos[by]||'Sin dato')}); });
+  info.forEach(function(o){ if (o.L.length > 1) pts.push({v:o.G, color:col[o.k], big:true, label:o.k}); });
+  $('rgRueda').innerHTML = svgRueda(pts, {});
+  $('rgLeyenda').innerHTML = '<div class="leg">'+keys.map(function(k){return '<span><i style="background:'+col[k]+'"></i>'+esc(k)+' ('+g[k].length+')</span>';}).join('')+'</div>';
+  $('rgTabla').innerHTML = '<table class="tbl"><thead><tr><th>'+esc($('rgBy').selectedOptions[0].text)+'</th><th class="num">n</th><th>Centro del grupo</th><th>Tipo más frecuente</th><th>Cohesión</th></tr></thead><tbody>'+
+    info.map(function(o){ var t = o.I.t1 ? tipoPorId(o.I.t1) : null; return '<tr><td style="white-space:nowrap"><span class="sw" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+col[o.k]+';margin-right:6px"></span>'+esc(o.k)+'</td><td class="num">'+o.L.length+'</td><td>'+centroTxt(o.G)+'</td><td>'+(t?esc(t.nombre)+' ('+Math.round(100*o.I.c[t.id]/o.L.length)+'%)':'—')+'</td><td>'+(o.L.length>1?o.G.cohesionNivel:'—')+'</td></tr>'; }).join('')+
+    '<tr><td><b>Total</b></td><td class="num"><b>'+D.length+'</b></td><td><b>'+centroTxt(T)+'</b></td><td></td><td><b>'+(T?T.cohesionNivel:'')+'</b></td></tr></tbody></table>';
+  $('rgGrid').innerHTML = info.map(function(o){
+    var p2 = o.L.map(function(x){ return {v:x.tp.vector, color:col[o.k], label:x.datos.nombre+' '+x.datos.apellido+' · '+(x.tp.t1?x.tp.t1.nombre:'')}; });
+    if (o.L.length > 1) p2.push({v:o.G, color:'#1A1A1A', big:true, label:'Centro'});
+    return '<div class="card"><h4><span class="sw" style="background:'+col[o.k]+'"></span>'+esc(o.k)+'</h4><div class="meta">'+o.L.length+' '+(o.L.length===1?'persona':'personas')+' · sector sombreado: tipo de puesto afín más frecuente</div>'+svgRueda(p2, {t1:o.I.t1})+'<p>'+o.I.html+'</p></div>';
+  }).join('');
 }
 
 /* ---------------- ajuste al puesto ---------------- */

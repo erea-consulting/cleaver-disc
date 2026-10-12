@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Panel CLEAVER · EREA Consulting</title>
+<link rel="icon" href="assets/logo-erea.png">
+<style>
+:root{--field:#0D5E4B;--acc:#0D8B7D;--ui:#267058;--soft:#E6F2EE;--ink:#1A1A1A;--body:#333333;--mute:#666666;--line:#DBE4DD;--line2:#C4D1C7;--neg:#B4543A;--pos:#2DBA85;--alert:#F4A833;--bg:#FFFFFF;--muted:#C9D3CE}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg)}
+body{font-family:Arial,Helvetica,sans-serif;color:var(--body);font-size:14px;line-height:1.45}
+.hdr{border-bottom:3px solid var(--acc);background:var(--bg);position:sticky;top:0;z-index:20}
+.hdr .row{max-width:1240px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.hdr img{height:34px}
+.hdr .ttl{flex:1;min-width:180px}
+.hdr .ttl b{display:block;color:var(--ink);font-size:16px}
+.hdr .ttl span{font-size:12px;color:var(--mute)}
+.tabs{display:flex;gap:6px}
+.tabs button,.chip{font:inherit;font-size:12px;padding:6px 14px;border:1px solid var(--line2);background:#fff;color:var(--ui);border-radius:14px;cursor:pointer}
+.tabs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+main{max-width:1240px;margin:0 auto;padding:20px 16px 60px}
+.eyebrow{font-size:10px;letter-spacing:.22em;font-weight:bold;color:var(--acc);text-transform:uppercase;margin-bottom:6px}
+h2{font-size:21px;line-height:1.3;color:var(--ink);margin:0 0 6px}
+h2:after{content:"";display:block;width:64px;height:3px;background:var(--acc);margin-top:10px}
+h3{font-size:15px;color:var(--ink);margin:0 0 8px;padding-bottom:6px;border-bottom:2px solid var(--line2)}
+.card{border:1px solid var(--line);border-radius:3px;padding:16px;background:#fff}
+.login{max-width:520px;margin:40px auto}
+.f{display:flex;flex-direction:column;gap:4px;margin:12px 0}
+.f label{font-size:12px;font-weight:bold;color:var(--ink)}
+input,select{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line2);border-radius:3px;background:#fff;color:var(--ink)}
+.btn{font:inherit;font-weight:bold;padding:9px 18px;border-radius:3px;border:1px solid var(--acc);background:var(--acc);color:#fff;cursor:pointer}
+.btn.sec{background:#fff;color:var(--ui);border-color:var(--line2)}
+.err{color:var(--neg);font-weight:bold;margin-top:8px}
+.filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:14px 0 4px}
+.filters .f{margin:0}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0 18px}
+.bar .grow{flex:1}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:8px 0 22px}
+.kpi{border:1px solid var(--line);border-top:3px solid var(--line2);border-radius:3px;padding:12px 14px}
+.kpi.acc{border-top-color:var(--acc)}
+.kpi .l{font-size:10px;letter-spacing:.18em;color:var(--mute);font-weight:bold;text-transform:uppercase}
+.kpi .v{font-size:30px;font-weight:bold;color:var(--ink);line-height:1.1;margin:4px 0 2px}
+.kpi.acc .v{color:var(--acc)}
+.kpi .n{font-size:12px;color:var(--mute)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{background:var(--field);color:#fff;font-weight:bold;padding:7px 9px;text-align:left;border:.5px solid var(--line2);white-space:nowrap}
+.tbl td{padding:6px 9px;border:.5px solid var(--line2)}
+.tbl td.num,.tbl th.num{text-align:right}
+.tbl tbody tr:nth-child(even) td{background:rgba(13,94,75,.035)}
+.tbl tbody tr.click{cursor:pointer}.tbl tbody tr.click:hover td{background:var(--soft)}
+.wrap{overflow-x:auto}
+.src{font-size:11px;color:var(--mute);font-style:italic;margin-top:8px}
+.hm{display:inline-block;min-width:38px;text-align:center;padding:2px 4px;border-radius:2px}
+.tag{display:inline-block;font-size:11px;font-weight:bold;padding:2px 8px;border-radius:10px;background:var(--soft);color:var(--field)}
+.tag.warn{background:#FDF5E6;color:#8a5a00}
+/* ---- reporte individual ---- */
+.rep{max-width:900px;margin:0 auto;background:#fff}
+.rep .rhead{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid var(--acc);padding-bottom:12px;margin-bottom:16px}
+.rep .rhead img{height:40px}
+.rep .rhead .st{font-size:10px;letter-spacing:.2em;color:var(--mute);border-left:2px solid var(--acc);padding-left:8px;text-transform:uppercase}
+.rep h1{font-size:24px;color:var(--ink);margin:4px 0 2px;text-transform:uppercase}
+.rep .who{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 16px;margin:14px 0 18px;font-size:13px}
+.rep .who div span{display:block;font-size:10px;letter-spacing:.16em;color:var(--mute);font-weight:bold;text-transform:uppercase}
+.rep .who div b{color:var(--ink)}
+.charts3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:8px 0 6px}
+.charts3 .c{border:1px solid var(--line);border-radius:3px;padding:10px 10px 6px}
+.charts3 .c.main{border-top:3px solid var(--acc)}
+.charts3 .ct{font-size:12px;font-weight:bold;color:var(--ink)}
+.charts3 .cs{font-size:11px;color:var(--mute);margin-bottom:4px}
+.charts3 .cb{font-size:12px;margin-top:4px;color:var(--body)}
+.kicker{margin:16px 0;padding:12px 16px;background:var(--soft);border-radius:3px;font-weight:bold;color:var(--ink);text-align:center;font-size:15px}
+.sec{margin:20px 0}
+.sec p{margin:6px 0;text-align:justify}
+.keyw{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.keyw>div{border:1px solid var(--line);border-top:3px solid var(--line2);padding:10px 12px;border-radius:3px}
+.keyw>div.hi{border-top-color:var(--acc)}
+.keyw .l{font-size:10px;letter-spacing:.16em;color:var(--mute);font-weight:bold;text-transform:uppercase}
+.keyw .p{font-size:22px;font-weight:bold;color:var(--ink)}
+.keyw .t{font-size:13px;color:var(--body)}
+.carac h4{font-size:13px;color:var(--field);margin:14px 0 4px;letter-spacing:.06em;text-transform:uppercase}
+.rfoot{border-top:1px solid var(--line);margin-top:24px;padding-top:8px;font-size:10px;color:var(--mute);display:flex;justify-content:space-between;gap:12px}
+.pb{break-after:page;page-break-after:always}
+.noprint{}
+.alerta{border-left:4px solid var(--neg);background:#F8ECE8;padding:12px 16px;border-radius:3px;margin:10px 0}
+.alerta b{color:var(--ink)}.alerta .bf{color:var(--neg);font-weight:bold;margin-top:6px}
+.alerta.r{border-left-color:var(--alert);background:#FDF5E6}
+.chip{display:inline-block;font-size:12px;padding:3px 10px;border-radius:12px;background:var(--soft);color:var(--field);font-weight:bold;margin:2px 4px 2px 0;cursor:default}
+.fhbox{background:var(--soft);border-radius:3px;padding:10px 14px;margin:8px 0}
+.fhbox .l{font-size:10px;letter-spacing:.16em;font-weight:bold;color:var(--acc);text-transform:uppercase}
+.fhgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.fhgrid>div{border:1px solid var(--line);border-top:3px solid var(--line2);border-radius:3px;padding:10px 12px}
+.fhgrid>div.hi{border-top-color:var(--acc)}
+.fhgrid h4{margin:0 0 4px;font-size:12px;color:var(--ink)}
+.fhgrid .lv{font-size:10px;letter-spacing:.14em;font-weight:bold;color:var(--mute);text-transform:uppercase;margin-bottom:4px}
+.fhgrid ul{margin:0;padding-left:16px;font-size:12px}.fhgrid li{margin:2px 0}
+.ruedabox{display:grid;grid-template-columns:3fr 2fr;gap:20px;align-items:center}
+.tp{border:1px solid var(--line);border-top:3px solid var(--acc);border-radius:3px;padding:12px 14px}
+.tp .n{font-size:22px;font-weight:bold;color:var(--ink)}
+.tp .a{font-size:12px;color:var(--mute);margin-bottom:6px}
+.aj{display:grid;grid-template-columns:2fr 3fr;gap:22px;align-items:start;margin-bottom:22px}
+.fhform{width:100%;border-collapse:collapse;font-size:13px}
+.fhform td{padding:4px 6px;border-bottom:1px solid var(--line)}
+.fhform td.n{width:28px;color:var(--mute);text-align:right}
+.fhform select{padding:4px 6px;font-size:13px}
+.dist{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;font-size:12px}
+.dist span{padding:3px 8px;border-radius:10px;border:1px solid var(--line2)}
+.dist span.ok{background:var(--soft);border-color:var(--acc);color:var(--field);font-weight:bold}
+.dist span.bad{border-color:var(--neg);color:var(--neg);font-weight:bold}
+.tag.alto{background:#E3F6EE;color:#17724F}.tag.medio{background:#FDF5E6;color:#8a5a00}.tag.bajo{background:#F8ECE8;color:#9a3f28}
+[hidden]{display:none!important}
+@media (max-width:900px){.grid2,.charts3,.keyw,.fhgrid,.ruedabox,.aj{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.rep .who{grid-template-columns:1fr 1fr}}
+@media print{
+ @page{size:A4;margin:14mm 12mm}
+ body{font-size:11px}
+ .hdr,.noprint{display:none!important}
+ main{padding:0;max-width:none}
+ .charts3{grid-template-columns:repeat(3,1fr)}
+ .keyw,.fhgrid{grid-template-columns:repeat(4,1fr)}
+ .ruedabox{grid-template-columns:3fr 2fr}
+ .rep .who{grid-template-columns:repeat(4,1fr)}
+ .grid2{grid-template-columns:1fr 1fr}
+ .kpis{grid-template-columns:repeat(5,1fr)}
+ .sec,.charts3,.card{break-inside:avoid}
+ .sec.carac{break-inside:auto}
+ .carac h4{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<header class="hdr">
+ <div class="row">
+  <img src="https://www.ereaconsulting.com/logo.svg" alt="EREA Consulting Group" onerror="this.onerror=null;this.src='assets/logo-erea.png'">
+  <div class="ttl"><b>Panel de resultados CLEAVER</b><span id="hdrSub">Uso exclusivo del equipo consultor</span></div>
+  <div class="tabs" id="tabs" hidden>
+   <button data-tab="consolidado" class="on">Consolidado</button>
+   <button data-tab="individual">Individual</button>
+   <button data-tab="ajuste">Ajuste al puesto</button>
+   <button data-tab="recargar">Actualizar</button>
+  </div>
+ </div>
+</header>
+
+<main>
+ <!-- LOGIN -->
+ <section id="vLogin" class="login card">
+  <div class="eyebrow">Acceso restringido</div>
+  <h2>Conectar con los resultados</h2>
+  <div class="f"><label>URL de la aplicación (Apps Script /exec)</label><input id="inUrl" placeholder="https://script.google.com/macros/s/.../exec"></div>
+  <div class="f"><label>Token del panel (hoja Config)</label><input id="inTok" type="password"></div>
+  <label style="font-size:12px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="inRem" checked> Recordar en este equipo</label>
+  <div style="margin-top:14px"><button class="btn" id="btnLogin">Entrar</button></div>
+  <div class="err" id="loginErr"></div>
+ </section>
+
+ <!-- CONSOLIDADO -->
+ <section id="vCons" hidden>
+  <div class="eyebrow">Reporte consolidado</div>
+  <h2 id="consTitle">Perfil conductual del grupo</h2>
+  <div class="filters noprint" id="filters"></div>
+  <div class="bar noprint">
+   <span class="grow" id="filterInfo"></span>
+   <button class="btn sec" id="btnClear">Limpiar filtros</button>
+   <button class="btn sec" id="btnCsv">Descargar CSV</button>
+   <button class="btn sec" id="btnPrintAll">Imprimir reportes individuales (filtrados)</button>
+   <button class="btn" onclick="window.print()">Imprimir consolidado</button>
+  </div>
+  <div class="kpis" id="kpis"></div>
+  <div class="kicker" id="consKicker"></div>
+  <div class="grid2">
+   <div class="card"><h3>Factor dominante (perfil Normal)</h3><div id="chDom"></div><div class="src">Factor con mayor percentil en el perfil Normal de cada persona.</div></div>
+   <div class="card"><h3>Percentil promedio por factor y perfil</h3><div id="chAvg"></div><div class="src">Promedio simple de percentiles. La línea punteada marca el 50.</div></div>
+  </div>
+  <div class="card" style="margin-bottom:22px">
+   <div class="bar" style="margin:0 0 10px"><h3 style="border:0;margin:0;padding:0" class="grow">Segmentación</h3>
+    <label style="font-size:12px">Agrupar por <select id="grpBy"></select></label>
+    <label style="font-size:12px">Perfil <select id="grpProf"><option value="normal">Normal</option><option value="motivacion">Motivación</option><option value="presion">Bajo presión</option></select></label></div>
+   <div class="wrap" id="tblSeg"></div>
+   <div class="src">Percentil promedio por factor; el color se intensifica a medida que el valor se aleja de 50. Grupos con menos de 5 personas se marcan con *: interpretar con cautela.</div>
+  </div>
+  <div class="card" style="margin-bottom:22px"><h3>Rueda de tipos de puesto · ubicación del grupo</h3><div class="ruedabox"><div id="chRueda"></div><div id="tblTipos"></div></div><div class="src">Cada punto es una persona, ubicada según su perfil Normal. Rueda Cleaver original: ejes Activo/Pasivo y Ambiente favorable/desfavorable.</div></div>
+  <div class="card" style="margin-bottom:22px"><h3>Alertas de metodología</h3><div id="tblAlertas"></div></div>
+  <div class="card"><h3>Combinaciones más frecuentes (perfil Normal)</h3><div class="wrap" id="tblComb"></div></div>
+ </section>
+
+ <!-- INDIVIDUAL -->
+ <section id="vInd" hidden>
+  <div class="noprint">
+   <div class="eyebrow">Reportes individuales</div>
+   <h2>Participantes</h2>
+   <div class="bar"><input id="search" placeholder="Buscar por nombre, ID, código, área…" style="flex:1;min-width:220px"><span id="indCount" class="tag"></span></div>
+   <div class="wrap" id="tblInd"></div>
+  </div>
+ </section>
+
+ <!-- AJUSTE AL PUESTO -->
+ <section id="vAj" hidden>
+  <div class="eyebrow">Ajuste persona · puesto</div>
+  <h2>Comparación contra el perfil ideal del puesto</h2>
+  <div class="aj">
+   <div class="card">
+    <h3>1. Perfil ideal</h3>
+    <div class="f"><label>Origen del perfil</label><select id="ajOrigen"><option value="retail">Tabla de puestos retail (propuesta EREA)</option><option value="guardado">Perfil guardado (Factor Humano)</option><option value="nuevo">Nuevo Factor Humano (24 conductas)</option></select></div>
+    <div id="ajRetail" class="f"><label>Puesto retail</label><select id="ajRol"></select></div>
+    <div id="ajGuardado" class="f" hidden><label>Perfil guardado</label><select id="ajPerf"></select></div>
+    <div id="ajNuevo" hidden>
+     <div class="filters" style="grid-template-columns:1fr 1fr;margin:0">
+      <div class="f"><label>Nombre del perfil</label><input id="fhNombre" placeholder="p. ej. Cajero tienda"></div>
+      <div class="f"><label>Puesto</label><input id="fhPuesto"></div>
+      <div class="f"><label>Área / Empresa</label><input id="fhArea"></div>
+      <div class="f"><label>Evaluado por (jefe inmediato)</label><input id="fhEval"></div>
+     </div>
+     <p style="font-size:12px;margin:8px 0">Califique de 1 a 5 la importancia de cada conducta para el puesto. Distribución obligatoria: cinco 5, cinco 4, cuatro 3, cinco 2 y cinco 1.</p>
+     <div class="dist" id="fhDist"></div>
+     <div style="max-height:420px;overflow:auto;border:1px solid var(--line)"><table class="fhform" id="fhTabla"></table></div>
+     <div class="bar" style="margin-top:10px"><button class="btn" id="fhGuardar">Guardar perfil en el Sheet</button><span id="fhMsg" style="font-size:12px"></span></div>
+    </div>
+    <div id="ajIdeal"></div>
+   </div>
+   <div class="card">
+    <h3>2. A quién comparar</h3>
+    <div class="filters" id="ajFiltros" style="margin:0 0 10px"></div>
+    <div class="kpis" id="ajKpis" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div id="ajRueda"></div>
+   </div>
+  </div>
+  <div class="card"><div class="bar" style="margin:0 0 10px"><h3 class="grow" style="border:0;margin:0;padding:0">Resultado del ajuste</h3><button class="btn sec noprint" id="ajCsv">Descargar CSV</button><button class="btn noprint" onclick="window.print()">Imprimir</button></div><div class="wrap" id="ajTabla"></div>
+  <div class="src">Criterio de ajuste (propuesta EREA): Alto = ningún factor del lado contrario de la línea media y diferencia promedio ≤ 15 puntos; Medio = un factor en contra y diferencia ≤ 25; Bajo = el resto. Un factor ideal entre 45 y 55, o un factor de la persona en 50, se considera neutro. Los perfiles de la tabla retail son plantillas EREA por tipo de puesto; el perfil oficial Cleaver es el Factor Humano que llena el jefe inmediato.</div></div>
+ </section>
+
+ <!-- REPORTE -->
+ <section id="vRep" hidden>
+  <div class="bar noprint"><button class="btn sec" id="btnBack">Volver</button><span class="grow"></span><button class="btn" onclick="window.print()">Imprimir / Guardar PDF</button></div>
+  <div id="repBox"></div>
+ </section>
+</main>
+
+<script>
+var DEFAULT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxMIvPA7zGmdQX6znRkzwPTxLkPpagxlWP2YUjGA4pEo1bw03BCgJEWvLCZVRxPIs_l/exec';
+var F = ['D','I','S','C'];
+var FN = {D:'Dominio',I:'Influencia',S:'Constancia',C:'Apego'};
+var DIMS = [['empresa','Empresa'],['area','Área'],['puesto','Puesto'],['sede','Sede'],['nivel','Nivel jerárquico'],['genero','Género'],['antiguedad','Antigüedad'],['edad_r','Rango de edad']];
+var DATA = null, TXT = null, FILT = {}, PERFILES = [], CLEAVER = {};
+// ===== Motor de calificación CLEAVER (EREA) =====
+// Replica la hoja "Resultados" del Excel original, con la corrección del bug V14
+// (el percentil S del perfil Normal buscaba V154 vacío en lugar de V8).
+// Entrada: respuestas = [{mas:0..3, menos:0..3} x 24]  (posición de la palabra dentro del grupo)
+// Requiere el objeto CLEAVER (datos extraídos del Excel) en el mismo ámbito.
+
+var FACTORES = ['D', 'I', 'S', 'C'];
+
+function cleaverVlookupAprox_(tabla, valor) {
+  // VLOOKUP(...,TRUE): última fila cuya clave <= valor
+  var res = null;
+  for (var i = 0; i < tabla.length; i++) {
+    if (tabla[i][0] <= valor) res = tabla[i][1]; else break;
+  }
+  return res === null ? tabla[0][1] : res;
+}
+
+function cleaverCombinacion_(perc) {
+  // Igual que el Excel: factor con percentil más alto / factor con percentil más bajo.
+  // En empate, toma el primero en orden D, I, S, C (comportamiento de HLOOKUP).
+  var max = -1, min = 999, fMax = '', fMin = '';
+  FACTORES.forEach(function (f) {
+    if (perc[f] > max) { max = perc[f]; fMax = f; }
+    if (perc[f] < min) { min = perc[f]; fMin = f; }
+  });
+  var clave = fMax + '/' + fMin;
+  var it = CLEAVER.interp[clave] || {};
+  return { clave: clave, tipo: it.tipo || '', desc: it.desc || '', puesto: it.puesto || '', alto: fMax, bajo: fMin };
+}
+
+function cleaverPalabrasClave_(perc) {
+  var col = { D: 2, I: 3, S: 4, C: 5 }, out = {};
+  FACTORES.forEach(function (f) {
+    var txt = '';
+    for (var i = 0; i < CLEAVER.estilos.length; i++) {
+      if (CLEAVER.estilos[i][0] <= perc[f]) txt = CLEAVER.estilos[i][col[f]];
+    }
+    out[f] = txt;
+  });
+  return out;
+}
+
+function cleaverCalificar(respuestas) {
+  if (!respuestas || respuestas.length !== 24) throw new Error('Se esperaban 24 grupos');
+  var M = { D: 0, I: 0, S: 0, C: 0 }, L = { D: 0, I: 0, S: 0, C: 0 };
+  respuestas.forEach(function (r, g) {
+    if (r.mas === r.menos) throw new Error('Grupo ' + (g + 1) + ': Más y Menos no pueden ser la misma palabra');
+    var fm = CLEAVER.keyM[g * 4 + r.mas], fl = CLEAVER.keyL[g * 4 + r.menos];
+    if (fm) M[fm]++;
+    if (fl) L[fl]++;
+  });
+  var T = {}, pMot = {}, pPre = {}, pNor = {};
+  FACTORES.forEach(function (f) {
+    T[f] = M[f] - L[f];
+    pMot[f] = cleaverVlookupAprox_(CLEAVER.tables[f + 'M'], M[f]);
+    pPre[f] = cleaverVlookupAprox_(CLEAVER.tables[f + 'L'], L[f]);
+    pNor[f] = cleaverVlookupAprox_(CLEAVER.tables[f + 'T'], T[f]);
+  });
+  return {
+    M: M, L: L, T: T,
+    motivacion: pMot, presion: pPre, normal: pNor,
+    combNormal: cleaverCombinacion_(pNor),
+    combMotivacion: cleaverCombinacion_(pMot),
+    combPresion: cleaverCombinacion_(pPre),
+    claveNormal: cleaverPalabrasClave_(pNor),
+    claveMotivacion: cleaverPalabrasClave_(pMot),
+    clavePresion: cleaverPalabrasClave_(pPre),
+    alertas: cleaverAlertas(pNor),
+    puesto: (function (tp) { return { t1: tp.t1 ? tp.t1.id : '', t2: tp.t2 ? tp.t2.id : '', ang: Math.round(tp.vector.ang), mag: Math.round(tp.vector.mag) }; })(cleaverTipoPuesto(pNor))
+  };
+}
+
+
+/* ---------- Alertas de la metodología original ---------- */
+// Ambivalencia: D y C "igualmente activos" = mismo nivel en la gráfica Normal.
+// Rigidez: D y S al mismo nivel.
+function cleaverAlertas(perc) {
+  var out = [];
+  if (perc.D === perc.C) {
+    var k = perc.D > 50 ? 'D=C+' : (perc.D < 50 ? 'D=C-' : 'D=C');
+    var it = CLEAVER.interp[k] || {};
+    out.push({ clave: k, tipo: it.tipo || 'Ambivalencia (en la línea media)', desc: it.desc || '', fh: it.fh || '', bandera: it.bandera || '' });
+  }
+  if (perc.D === perc.S) out.push({ clave: 'D=S', tipo: 'Rigidez', desc: (CLEAVER.rigidez || {}).desc || '', fh: '', bandera: '' });
+  return out;
+}
+
+/* ---------- Rueda de tipos de puesto ---------- */
+// Ejes: Activo (arriba, D e I) / Pasivo (abajo, S y C); Ambiente desfavorable (izquierda, D y C) / favorable (derecha, I y S).
+var RUEDA_ANG = { D: 135, I: 45, S: 315, C: 225 };
+function cleaverVector(perc) {
+  var x = 0, y = 0;
+  FACTORES.forEach(function (f) {
+    var a = RUEDA_ANG[f] * Math.PI / 180, v = perc[f] - 50;
+    x += v * Math.cos(a); y += v * Math.sin(a);
+  });
+  var ang = Math.atan2(y, x) * 180 / Math.PI; if (ang < 0) ang += 360;
+  return { x: x, y: y, ang: ang, mag: Math.sqrt(x * x + y * y) };
+}
+function cleaverTipoPuesto(perc) {
+  var v = cleaverVector(perc), tipos = CLEAVER.tiposPuesto || [];
+  for (var i = 0; i < tipos.length; i++) {
+    var t = tipos[i];
+    if (v.ang >= t.desde && v.ang < t.hasta) {
+      // segundo tipo: sector vecino más cercano al ángulo
+      var mid = (t.desde + t.hasta) / 2, vecino = v.ang < mid ? t.desde - 1 : t.hasta + 1;
+      vecino = (vecino + 360) % 360;
+      var t2 = tipos.filter(function (x) { return vecino >= x.desde && vecino < x.hasta; })[0];
+      return { t1: t, t2: t2, vector: v };
+    }
+  }
+  return { t1: null, t2: null, vector: v };
+}
+
+/* ---------- Factor Humano (perfil del puesto) ---------- */
+// valores: arreglo de 24 números del 1 al 5, en el orden del formulario.
+function cleaverFactorHumano(valores) {
+  var FHd = CLEAVER.factorHumano, R = { D: 0, I: 0, S: 0, C: 0 };
+  if (!valores || valores.length !== 24) throw new Error('Se esperaban 24 valores');
+  FHd.conductas.forEach(function (c, i) { R[c[1]] += +valores[i] || 0; });
+  var a = (R.D + R.I + R.S + R.C) / 4, ent = Math.floor(a), fr = a - ent;
+  var A = fr < 0.5 ? ent : (fr === 0.5 ? ent + 0.5 : ent + 1);   // .25 abajo, .50 se conserva, .75 arriba
+  var mult = null;
+  FHd.multiplos.forEach(function (m) { if (A >= m[0] && A <= m[1]) mult = m[2]; });
+  if (mult === null) mult = A < 12 ? 8 : 3.5;
+  var G = {}, F = {};
+  FACTORES.forEach(function (f) { F[f] = (R[f] - A) * mult; G[f] = Math.max(0, Math.min(100, Math.round(F[f] + 50))); });
+  var cnt = {}; valores.forEach(function (v) { cnt[v] = (cnt[v] || 0) + 1; });
+  var okDist = Object.keys(FHd.distribucion).every(function (k) { return (cnt[k] || 0) === FHd.distribucion[k]; });
+  var plano = FACTORES.every(function (f) { return G[f] >= 40 && G[f] <= 60; });
+  return { R: R, A: A, mult: mult, F: F, G: G, distribucionOk: okDist, conteo: cnt, plano: plano };
+}
+
+/* ---------- Perfil plantilla de un tipo de puesto (propuesta EREA) ---------- */
+var OPUESTO = { D: 'S', S: 'D', I: 'C', C: 'I' };
+function cleaverPlantilla(tipoId) {
+  var t = (CLEAVER.tiposPuesto || []).filter(function (x) { return x.id === tipoId; })[0];
+  if (!t) return null;
+  var g = {}; g[t.p] = 80; g[t.s] = 65; g[OPUESTO[t.p]] = 20; g[OPUESTO[t.s]] = 35;
+  return g;
+}
+
+/* ---------- Ajuste persona vs. puesto (criterio EREA) ---------- */
+// Compara el perfil Normal con el perfil ideal. Un factor ideal entre 45 y 55, o un factor de la persona en 50, se considera neutro.
+function cleaverAjuste(perc, ideal) {
+  var dif = 0, choques = [], detalle = {};
+  FACTORES.forEach(function (f) {
+    var d = perc[f] - ideal[f]; dif += Math.abs(d); detalle[f] = d;
+    var neutro = ideal[f] >= 45 && ideal[f] <= 55;
+    if (!neutro && perc[f] !== 50 && ((ideal[f] > 50) !== (perc[f] > 50))) choques.push(f);
+  });
+  var mad = Math.round(dif / 4);
+  var nivel = (choques.length === 0 && mad <= 15) ? 'Alto' : ((choques.length <= 1 && mad <= 25) ? 'Medio' : 'Bajo');
+  return { mad: mad, choques: choques, nivel: nivel, detalle: detalle };
+}
+
+
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v);}catch(e){return null;}}
+function edadR(e){if(e===''||e==null||isNaN(e))return 'Sin dato';e=+e;return e<25?'Menos de 25':e<35?'25 a 34':e<45?'35 a 44':e<55?'45 a 54':'55 o más';}
+function fmtFecha(s){var d=new Date(s);return isNaN(d)?'':d.toLocaleDateString('es-HN',{day:'2-digit',month:'short',year:'numeric'});}
+
+/* ---------------- login ---------------- */
+(function(){
+  var h = new URLSearchParams(location.hash.slice(1));
+  $('inUrl').value = h.get('url') || ls('erea_panel_url') || (DEFAULT_ENDPOINT.indexOf('http')===0?DEFAULT_ENDPOINT:'');
+  $('inTok').value = h.get('token') || ls('erea_panel_tok') || '';
+  if (h.get('token')) history.replaceState(null,'',location.pathname);
+  if ($('inUrl').value && $('inTok').value) cargar();
+})();
+$('btnLogin').onclick = cargar;
+function cargar(){
+  var url = $('inUrl').value.trim(), tok = $('inTok').value.trim();
+  $('loginErr').textContent = ''; $('btnLogin').textContent = 'Cargando…';
+  fetch(url + (url.indexOf('?')<0?'?':'&') + 'action=data&token=' + encodeURIComponent(tok))
+   .then(function(r){return r.json();})
+   .then(function(j){
+     $('btnLogin').textContent = 'Entrar';
+     if (!j.ok) throw new Error(j.error||'Error');
+     if ($('inRem').checked){ ls('erea_panel_url',url); ls('erea_panel_tok',tok); } else { ls('erea_panel_url',null); ls('erea_panel_tok',null); }
+     DATA = j.registros.map(function(x){ x.datos.edad_r = edadR(x.edad); return x; });
+     TXT = j.textos; CLEAVER = j.textos; PERFILES = j.perfiles || [];
+     DATA.forEach(function(x){ x.tp = cleaverTipoPuesto(x.r.normal); x.al = cleaverAlertas(x.r.normal); });
+     $('hdrSub').textContent = DATA.length + ' respuestas · actualizado ' + new Date(j.generado).toLocaleString('es-HN');
+     $('vLogin').hidden = true; $('tabs').hidden = false;
+     buildFilters(); tab('consolidado');
+   })
+   .catch(function(e){ $('btnLogin').textContent='Entrar'; $('vLogin').hidden=false; $('loginErr').textContent = 'No se pudo conectar: ' + e.message; });
+}
+
+/* ---------------- navegación ---------------- */
+$('tabs').onclick = function(e){ var b=e.target.closest('button'); if(!b)return; var t=b.getAttribute('data-tab'); if(t==='recargar'){cargar();return;} tab(t); };
+function tab(t){
+  document.querySelectorAll('#tabs button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-tab')===t);});
+  $('vCons').hidden = t!=='consolidado'; $('vInd').hidden = t!=='individual'; $('vAj').hidden = t!=='ajuste'; $('vRep').hidden = true;
+  if (t==='consolidado') renderCons(); else if (t==='ajuste') initAjuste(); else renderInd();
+  window.scrollTo(0,0);
+}
+
+/* ---------------- filtros ---------------- */
+function buildFilters(){
+  var h='';
+  DIMS.forEach(function(d){
+    var vals = uniq(DATA.map(function(x){return x.datos[d[0]]||'Sin dato';}));
+    if (vals.length < 2 && d[0]!=='empresa') return;
+    h += '<div class="f"><label>'+d[1]+'</label><select data-dim="'+d[0]+'"><option value="">Todos</option>'+vals.map(function(v){return '<option'+(FILT[d[0]]===v?' selected':'')+'>'+esc(v)+'</option>';}).join('')+'</select></div>';
+  });
+  $('filters').innerHTML = h;
+  $('grpBy').innerHTML = DIMS.filter(function(d){return d[0]!=='empresa'||uniq(DATA.map(function(x){return x.datos.empresa;})).length>1;}).map(function(d){return '<option value="'+d[0]+'">'+d[1]+'</option>';}).join('');
+  $('grpBy').value = 'area';
+}
+function uniq(a){var o={};a.forEach(function(v){o[v]=1;});return Object.keys(o).sort(function(a,b){return a.localeCompare(b,'es');});}
+$('filters').onchange = function(e){ var d=e.target.getAttribute('data-dim'); if(e.target.value) FILT[d]=e.target.value; else delete FILT[d]; renderCons(); };
+$('btnClear').onclick = function(){ FILT={}; buildFilters(); renderCons(); };
+$('grpBy').onchange = $('grpProf').onchange = function(){ renderSeg(filtered()); };
+function filtered(){ return DATA.filter(function(x){ for (var k in FILT) if ((x.datos[k]||'Sin dato')!==FILT[k]) return false; return true; }); }
+
+/* ---------------- consolidado ---------------- */
+function dom(x){ return x.r.combNormal.alto; }
+function renderCons(){
+  var D = filtered(), n = D.length;
+  var desc = Object.keys(FILT).map(function(k){return FILT[k];}).join(' · ');
+  $('filterInfo').textContent = n + ' de ' + DATA.length + ' participantes' + (desc?' · ' + desc:'');
+  $('consTitle').textContent = 'Perfil conductual del grupo' + (desc ? ' · ' + desc : '');
+  var cnt = {D:0,I:0,S:0,C:0}; D.forEach(function(x){cnt[dom(x)]++;});
+  var top = F.slice().sort(function(a,b){return cnt[b]-cnt[a];})[0];
+  var k = '<div class="kpi"><div class="l">Participantes</div><div class="v">'+n+'</div><div class="n">con cuestionario completo</div></div>';
+  F.forEach(function(f){ k += '<div class="kpi'+(f===top&&n?' acc':'')+'"><div class="l">Dominante '+f+' · '+FN[f]+'</div><div class="v">'+(n?Math.round(100*cnt[f]/n):0)+'%</div><div class="n">'+cnt[f]+' personas</div></div>'; });
+  $('kpis').innerHTML = k;
+  $('consKicker').textContent = n ? '«El estilo predominante del grupo es ' + FN[top] + ' (' + top + '): ' + Math.round(100*cnt[top]/n) + '% de las personas lo tienen como factor más alto en su perfil Normal»' : 'Sin datos para los filtros seleccionados';
+  $('chDom').innerHTML = svgBars(F.map(function(f){return {l:f+' · '+FN[f], v:n?100*cnt[f]/n:0, t:cnt[f]+' ('+(n?Math.round(100*cnt[f]/n):0)+'%)', hi:f===top};}));
+  var avg = function(p,f){ return n ? D.reduce(function(s,x){return s+x.r[p][f];},0)/n : 0; };
+  $('chAvg').innerHTML = svgGrouped([['motivacion','Motivación','#9AA5A0'],['presion','Bajo presión','#C9D3CE'],['normal','Normal','#0D8B7D']].map(function(p){return {name:p[1],color:p[2],vals:F.map(function(f){return avg(p[0],f);})};}));
+  renderSeg(D); renderComb(D); renderRuedaCons(D);
+}
+function hmColor(v){ var d = Math.min(Math.abs(v-50)/40,1); return v>=50 ? 'rgba(13,139,125,'+(0.08+0.55*d)+')' : 'rgba(180,84,58,'+(0.06+0.45*d)+')'; }
+function renderSeg(D){
+  var by = $('grpBy').value, prof = $('grpProf').value, g = {};
+  D.forEach(function(x){ var key = x.datos[by]||'Sin dato'; (g[key]=g[key]||[]).push(x); });
+  var keys = Object.keys(g).sort(function(a,b){return g[b].length-g[a].length;});
+  var h = '<table class="tbl"><thead><tr><th>'+esc($('grpBy').selectedOptions[0].text)+'</th><th class="num">n</th>'+F.map(function(f){return '<th class="num">'+f+' %</th>';}).join('')+F.map(function(f){return '<th class="num">Dom. '+f+'</th>';}).join('')+'<th>Combinación más frecuente</th></tr></thead><tbody>';
+  keys.forEach(function(k){
+    var L = g[k], n = L.length, c = {D:0,I:0,S:0,C:0}, cb = {};
+    L.forEach(function(x){ c[dom(x)]++; var t=x.r.combNormal.tipo||x.r.combNormal.clave; cb[t]=(cb[t]||0)+1; });
+    var tc = Object.keys(cb).sort(function(a,b){return cb[b]-cb[a];})[0];
+    h += '<tr><td>'+esc(k)+(n<5?' *':'')+'</td><td class="num">'+n+'</td>' + F.map(function(f){ var a = L.reduce(function(s,x){return s+x.r[prof][f];},0)/n; return '<td class="num"><span class="hm" style="background:'+hmColor(a)+'">'+Math.round(a)+'</span></td>'; }).join('') +
+      F.map(function(f){return '<td class="num">'+Math.round(100*c[f]/n)+'%</td>';}).join('') + '<td>'+esc(tc)+' ('+cb[tc]+')</td></tr>';
+  });
+  $('tblSeg').innerHTML = h + '</tbody></table>';
+}
+function renderComb(D){
+  var c = {}; D.forEach(function(x){ var k=x.r.combNormal.clave; c[k]=c[k]||{n:0,tipo:x.r.combNormal.tipo}; c[k].n++; });
+  var ks = Object.keys(c).sort(function(a,b){return c[b].n-c[a].n;});
+  $('tblComb').innerHTML = '<table class="tbl"><thead><tr><th>Combinación</th><th>Tipo</th><th class="num">Personas</th><th class="num">%</th></tr></thead><tbody>' +
+    ks.map(function(k){return '<tr><td>'+k+'</td><td>'+esc(c[k].tipo||'Sin interpretación estándar')+'</td><td class="num">'+c[k].n+'</td><td class="num">'+Math.round(100*c[k].n/D.length)+'%</td></tr>';}).join('') + '</tbody></table>';
+}
+
+/* ---------------- gráficos SVG ---------------- */
+function svgBars(items){
+  var W=520,rh=40,H=items.length*rh+10,x0=130,w=W-x0-90; var mx=Math.max.apply(null,items.map(function(i){return i.v;}))||1;
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" font-family="Arial">';
+  items.forEach(function(it,i){ var y=i*rh+8, bw=Math.max(2,w*it.v/mx);
+    s+='<text x="0" y="'+(y+18)+'" font-size="13" fill="#333">'+esc(it.l)+'</text><rect x="'+x0+'" y="'+(y+4)+'" width="'+bw+'" height="20" fill="'+(it.hi?'#0D8B7D':'#C9D3CE')+'"/><text x="'+(x0+bw+6)+'" y="'+(y+18)+'" font-size="12" font-weight="bold" fill="#1A1A1A">'+esc(it.t)+'</text>'; });
+  return s+'</svg>';
+}
+function svgGrouped(series){
+  var W=520,H=230,l=34,b=40,t=10,cw=(W-l-10)/4,bw=cw/(series.length+1.2);
+  var y=function(v){return t+(H-t-b)*(1-v/100);};
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" font-family="Arial">';
+  [0,25,50,75,100].forEach(function(v){ s+='<line x1="'+l+'" x2="'+(W-10)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="'+(v===50?'#666':'#DBE4DD')+'" '+(v===50?'stroke-dasharray="4 3"':'')+'/><text x="'+(l-6)+'" y="'+(y(v)+4)+'" font-size="10" fill="#666" text-anchor="end">'+v+'</text>'; });
+  F.forEach(function(f,i){ var gx=l+i*cw+bw*0.6;
+    series.forEach(function(se,j){ var v=se.vals[i]; s+='<rect x="'+(gx+j*bw)+'" y="'+y(v)+'" width="'+(bw-3)+'" height="'+(y(0)-y(v))+'" fill="'+se.color+'"/><text x="'+(gx+j*bw+(bw-3)/2)+'" y="'+(y(v)-3)+'" font-size="9" text-anchor="middle" fill="#333">'+Math.round(v)+'</text>'; });
+    s+='<text x="'+(l+i*cw+cw/2)+'" y="'+(H-b+16)+'" font-size="12" font-weight="bold" text-anchor="middle" fill="#1A1A1A">'+f+'</text>'; });
+  var lx=l; series.forEach(function(se){ s+='<rect x="'+lx+'" y="'+(H-14)+'" width="10" height="10" fill="'+se.color+'"/><text x="'+(lx+14)+'" y="'+(H-5)+'" font-size="11" fill="#333">'+se.name+'</text>'; lx+=se.name.length*6.5+34; });
+  return s+'</svg>';
+}
+function svgProfile(p, main){
+  var W=260,H=200,l=28,r=12,t=14,b=26, cw=(W-l-r)/3;
+  var X=function(i){return l+i*cw;}, Y=function(v){return t+(H-t-b)*(1-v/100);};
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" font-family="Arial">';
+  [0,25,50,75,100].forEach(function(v){ s+='<line x1="'+l+'" x2="'+(W-r)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="'+(v===50?'#666':'#DBE4DD')+'" '+(v===50?'stroke-dasharray="4 3"':'')+'/><text x="'+(l-5)+'" y="'+(Y(v)+3)+'" font-size="9" fill="#666" text-anchor="end">'+v+'</text>'; });
+  var col = main ? '#0D8B7D' : '#0D5E4B';
+  s+='<polyline fill="none" stroke="'+col+'" stroke-width="2.5" points="'+F.map(function(f,i){return X(i)+','+Y(p[f]);}).join(' ')+'"/>';
+  F.forEach(function(f,i){ s+='<circle cx="'+X(i)+'" cy="'+Y(p[f])+'" r="4.5" fill="'+col+'"/><text x="'+X(i)+'" y="'+(Y(p[f])-8)+'" font-size="11" font-weight="bold" text-anchor="middle" fill="#1A1A1A">'+p[f]+'</text><text x="'+X(i)+'" y="'+(H-8)+'" font-size="12" font-weight="bold" text-anchor="middle" fill="#1A1A1A">'+f+'</text>'; });
+  return s+'</svg>';
+}
+
+/* ---------------- individual ---------------- */
+var IND_LIST = [];
+$('search').oninput = renderInd;
+function renderInd(){
+  var q = ($('search').value||'').toLowerCase();
+  IND_LIST = DATA.filter(function(x){ return !q || JSON.stringify(x.datos).toLowerCase().indexOf(q)>=0 || String(x.folio).toLowerCase().indexOf(q)>=0; });
+  $('indCount').textContent = IND_LIST.length + ' personas';
+  $('tblInd').innerHTML = '<table class="tbl"><thead><tr><th>Folio</th><th>Nombre</th><th>ID</th><th>Área</th><th>Puesto</th><th>Sede</th><th>Fecha</th><th>Combinación (Normal)</th><th class="num">D</th><th class="num">I</th><th class="num">S</th><th class="num">C</th></tr></thead><tbody>' +
+    IND_LIST.map(function(x,i){ var d=x.datos,p=x.r.normal; return '<tr class="click" data-i="'+i+'"><td>'+esc(x.folio)+'</td><td>'+esc(d.nombre+' '+d.apellido)+'</td><td>'+esc(d.identidad)+'</td><td>'+esc(d.area)+'</td><td>'+esc(d.puesto)+'</td><td>'+esc(d.sede)+'</td><td>'+fmtFecha(x.fecha)+'</td><td>'+esc(x.r.combNormal.clave+' · '+x.r.combNormal.tipo)+'</td>'+F.map(function(f){return '<td class="num">'+p[f]+'</td>';}).join('')+'</tr>'; }).join('') + '</tbody></table>';
+}
+$('tblInd').onclick = function(e){ var tr=e.target.closest('tr[data-i]'); if(!tr)return; showReports([IND_LIST[+tr.getAttribute('data-i')]]); };
+$('btnPrintAll').onclick = function(){ var D=filtered(); if(!D.length)return; if(D.length>80 && !confirm('Se prepararán '+D.length+' reportes para imprimir. ¿Continuar?'))return; showReports(D, true); };
+$('btnBack').onclick = function(){ $('vRep').hidden=true; var t=document.querySelector('#tabs button.on').getAttribute('data-tab'); tab(t); };
+
+function showReports(list, autoprint){
+  $('repBox').innerHTML = list.map(function(x,i){ return reportHTML(x) + (i<list.length-1?'<div class="pb"></div>':''); }).join('');
+  $('vCons').hidden = $('vInd').hidden = $('vAj').hidden = true; $('vRep').hidden = false; window.scrollTo(0,0);
+  if (autoprint) setTimeout(function(){ window.print(); }, 400);
+}
+function nivelTxt(v){ return v>50?'+':(v<50?'-':''); }
+function reportHTML(x){
+  var d=x.datos, r=x.r, cn=r.combNormal;
+  var who = [['Empresa',d.empresa],['Área',d.area],['Puesto',d.puesto],['Sede',d.sede],['ID',d.identidad],['Código',d.codigo],['Nivel',d.nivel],['Fecha de aplicación',fmtFecha(x.fecha)],['Inicio',x.inicio],['Fin',x.fin],['Duración',x.duracionMin!==''&&x.duracionMin!=null?x.duracionMin+' min':''],['IP',x.ip]];
+  var h = '<article class="rep">';
+  h += '<div class="rhead"><div><div class="eyebrow">Reporte individual · CLEAVER (DISC)</div><h1>'+esc(d.nombre+' '+d.apellido)+'</h1><div style="font-size:12px;color:#666">Folio '+esc(x.folio)+(x.edad!==''&&x.edad!=null?' · '+x.edad+' años':'')+'</div></div><div style="text-align:right"><img src="https://www.ereaconsulting.com/logo.svg" onerror="this.onerror=null;this.src=\'assets/logo-erea.png\'" alt="EREA"><div class="st" style="margin-top:8px">Confidencial</div></div></div>';
+  h += '<div class="who">'+who.filter(function(w){return w[1];}).map(function(w){return '<div><span>'+w[0]+'</span><b>'+esc(w[1])+'</b></div>';}).join('')+'</div>';
+  h += '<div class="kicker">«Estilo '+esc(cn.tipo||cn.clave)+': '+FN[cn.alto]+' alto y '+FN[cn.bajo].toLowerCase()+' bajo en su conducta cotidiana»</div>';
+  h += '<div class="sec"><h3>Gráficas de perfil</h3><div class="charts3">' +
+    [['motivacion','Motivación','Cómo cree que debe comportarse (respuestas MÁS)',r.combMotivacion],['presion','Bajo presión','Cómo reacciona ante la tensión (respuestas MENOS)',r.combPresion],['normal','Normal','Su conducta cotidiana (MÁS menos MENOS)',cn]]
+    .map(function(p){return '<div class="c'+(p[0]==='normal'?' main':'')+'"><div class="ct">'+p[1]+'</div><div class="cs">'+p[2]+'</div>'+svgProfile(r[p[0]],p[0]==='normal')+'<div class="cb"><b>'+p[3].clave+'</b> · '+esc(p[3].tipo)+'</div></div>';}).join('') + '</div><div class="src">Percentiles de 0 a 100. La línea punteada marca el 50: por encima, el factor es alto; por debajo, bajo.</div></div>';
+  var it = TXT.interp[cn.clave] || {};
+  h += alertasHTML(x.al);
+  h += '<div class="sec"><h3>Interpretación del perfil Normal · '+esc(cn.tipo)+' ('+cn.clave+')</h3>'+(it.matriz?'<div>'+it.matriz.split(' · ').map(function(k){return '<span class="chip">'+esc(k)+'</span>';}).join('')+'</div>':'')+
+       '<p><b>Autodescripción (A.D.):</b> '+esc(cn.desc)+'</p>'+(it.fh?'<div class="fhbox"><div class="l">Factor humano (F.H.) · puestos en los que este estilo encaja</div><p style="margin:4px 0 0">'+esc(it.fh)+'</p></div>':'')+'</div>';
+  var tp = x.tp;
+  if (tp.t1) h += '<div class="sec"><h3>Tipo de puesto afín · rueda Cleaver</h3><div class="ruedabox"><div>'+svgRueda([{v:tp.vector,label:d.nombre,big:true}],{t1:tp.t1.id,t2:tp.t2&&tp.t2.id})+'</div><div><div class="tp"><div class="eyebrow">1º · tipo de puesto afín</div><div class="n">'+tp.t1.n+'. '+esc(tp.t1.nombre)+'</div><div class="a">'+esc(tp.t1.alias)+' · '+esc(tp.t1.car)+'</div><p style="margin:0;font-size:13px">'+esc(tp.t1.desc)+'</p></div>'+(tp.t2?'<p style="font-size:13px;margin-top:10px"><b>2º tipo cercano:</b> '+tp.t2.n+'. '+esc(tp.t2.nombre)+' ('+esc(tp.t2.alias)+')</p>':'')+'</div></div></div>';
+  [['Motivación',r.combMotivacion],['Bajo presión',r.combPresion]].forEach(function(p){ if(p[1].clave!==cn.clave) h+='<div class="sec"><h3>'+p[0]+' · '+esc(p[1].tipo)+' ('+p[1].clave+')</h3><p>'+esc(p[1].desc)+'</p></div>'; else h+='<div class="sec"><h3>'+p[0]+' · '+esc(p[1].tipo)+' ('+p[1].clave+')</h3><p>Coincide con el perfil Normal: su conducta se mantiene consistente en este contexto.</p></div>'; });
+  h += '<div class="sec"><h3>Palabras clave por factor (perfil Normal)</h3><div class="keyw">'+F.map(function(f){return '<div class="'+(f===cn.alto?'hi':'')+'"><div class="l">'+f+' · '+FN[f]+'</div><div class="p">'+r.normal[f]+'</div><div class="t">'+esc(r.claveNormal[f])+'</div></div>';}).join('')+'</div></div>';
+  h += '<div class="sec"><h3>Factores humanos en la percepción del puesto</h3><div class="fhgrid">'+F.map(function(f){
+      var fh = TXT.factoresHumanos[f], hi = r.normal[f] > 50, eq = r.normal[f] === 50, lista = eq ? [] : (hi ? fh.alta : fh.baja);
+      return '<div class="'+(hi?'hi':'')+'"><h4>'+f+' · '+esc(fh.nombre)+'</h4><div class="lv">'+(eq?'En la línea media':(hi?'Alta':'Baja'))+' · percentil '+r.normal[f]+'</div><ul>'+lista.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ul></div>';
+    }).join('')+'</div><div class="src">Conductas que la persona tiende a mostrar en el puesto, según el nivel de cada factor en su perfil Normal.</div></div>';
+  h += '<div class="sec carac"><h3>Características por factor</h3>' + F.map(function(f){
+      var lv = nivelTxt(r.normal[f]), key = f + lv, ttl = lv==='+'?'Alto en ':lv==='-'?'Bajo en ':'';
+      var ps = (TXT.caracteristicas[key]||TXT.caracteristicas[f]||[]);
+      return '<h4>'+ttl+FN[f]+' ('+f+lv+') · percentil '+r.normal[f]+'</h4>'+ps.map(function(t){return '<p>'+esc(t)+'</p>';}).join('');
+    }).join('') + '</div>';
+  h += '<div class="rfoot"><span>Está prohibida su reproducción total o parcial sin la autorización por escrito de EREA Consulting.</span><span>Documento confidencial</span></div>';
+  return h + '</article>';
+}
+
+/* ---------------- CSV ---------------- */
+$('btnCsv').onclick = function(){
+  var D = filtered(), cols = ['folio','fecha','inicio','fin','duracionMin','ip','empresa','nombre','apellido','identidad','codigo','area','puesto','sede','nivel','fecha_nacimiento','edad','genero','antiguedad'];
+  var head = cols.slice(); ['motivacion','presion','normal'].forEach(function(p){F.forEach(function(f){head.push(p+'_'+f);});}); head.push('dominante','comb_normal','tipo_normal','comb_motivacion','comb_presion');
+  var rows = D.map(function(x){ var row = cols.map(function(c){ return ['folio','fecha','inicio','fin','duracionMin','ip','edad'].indexOf(c)>=0?x[c]:x.datos[c]; });
+    ['motivacion','presion','normal'].forEach(function(p){F.forEach(function(f){row.push(x.r[p][f]);});});
+    row.push(x.r.combNormal.alto,x.r.combNormal.clave,x.r.combNormal.tipo,x.r.combMotivacion.clave,x.r.combPresion.clave); return row; });
+  var csv = '﻿' + [head].concat(rows).map(function(r){return r.map(function(v){v=v==null?'':String(v);return /[";\n,]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(',');}).join('\n');
+  var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download = 'CLEAVER_resultados.csv'; a.click();
+};
+
+/* ---------------- alertas ---------------- */
+function alertasHTML(al){
+  if (!al || !al.length) return '';
+  return al.map(function(a){
+    if (a.clave==='D=S') return '<div class="alerta r"><b>Alerta · Rigidez (D = S).</b> '+esc(a.desc)+'</div>';
+    return '<div class="alerta"><b>Alerta · '+esc(a.tipo)+' ('+a.clave.replace('+',' alta').replace('-',' baja')+').</b> '+esc(a.desc)+(a.fh?'<p style="margin:6px 0 0"><b>F.H.:</b> '+esc(a.fh)+'</p>':'')+(a.bandera?'<div class="bf">Bandera roja: '+esc(a.bandera)+'</div>':'')+'</div>';
+  }).join('');
+}
+
+/* ---------------- rueda de tipos de puesto ---------------- */
+function svgRueda(pts, o){
+  o = o || {};
+  var W=640,H=520,cx=320,cy=262,R=170;
+  var P=function(a,r){ var t=a*Math.PI/180; return [cx+r*Math.cos(t), cy-r*Math.sin(t)]; };
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" font-family="Arial" role="img">';
+  (TXT.tiposPuesto||[]).forEach(function(t){
+    var fill = t.id===o.t1 ? 'rgba(13,139,125,.30)' : (t.id===o.t2 ? 'rgba(13,139,125,.12)' : '#fff');
+    var a=P(t.desde,R), b=P(t.hasta,R);
+    s+='<path d="M'+cx+','+cy+' L'+a[0]+','+a[1]+' A'+R+','+R+' 0 0,0 '+b[0]+','+b[1]+' Z" fill="'+fill+'" stroke="#C4D1C7"/>';
+    var m=(t.desde+t.hasta)/2, l=P(m,R+26), anc=Math.cos(m*Math.PI/180)>0.2?'start':(Math.cos(m*Math.PI/180)<-0.2?'end':'middle');
+    var bold = (t.id===o.t1||t.id===o.t2) ? 'bold' : 'normal';
+    s+='<text x="'+l[0]+'" y="'+(l[1]-2)+'" font-size="12" font-weight="'+bold+'" text-anchor="'+anc+'" fill="#1A1A1A">'+t.n+'. '+esc(t.nombre)+'</text><text x="'+l[0]+'" y="'+(l[1]+12)+'" font-size="10" text-anchor="'+anc+'" fill="#666">'+esc(t.alias)+'</text>';
+  });
+  s+='<line x1="'+(cx-R-8)+'" y1="'+cy+'" x2="'+(cx+R+8)+'" y2="'+cy+'" stroke="#666"/><line x1="'+cx+'" y1="'+(cy-R-8)+'" x2="'+cx+'" y2="'+(cy+R+8)+'" stroke="#666"/>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="none" stroke="#9AA5A0"/><circle cx="'+cx+'" cy="'+cy+'" r="10" fill="#fff" stroke="#9AA5A0"/>';
+  s+='<text x="'+cx+'" y="'+(cy-R-14)+'" font-size="11" font-weight="bold" text-anchor="middle" fill="#666">ACTIVO</text><text x="'+cx+'" y="'+(cy+R+22)+'" font-size="11" font-weight="bold" text-anchor="middle" fill="#666">PASIVO</text>';
+  s+='<text x="'+(cx-R-12)+'" y="'+(cy-6)+'" font-size="10" text-anchor="end" fill="#666">Ambiente</text><text x="'+(cx-R-12)+'" y="'+(cy+7)+'" font-size="10" text-anchor="end" fill="#666">desfavorable</text>';
+  s+='<text x="'+(cx+R+12)+'" y="'+(cy-6)+'" font-size="10" fill="#666">Ambiente</text><text x="'+(cx+R+12)+'" y="'+(cy+7)+'" font-size="10" fill="#666">favorable</text>';
+  [['D','Dominio',40,46,'start'],['I','Influencia',W-40,46,'end'],['C','Apego',40,H-30,'start'],['S','Constancia',W-40,H-30,'end']].forEach(function(q){
+    s+='<text x="'+q[2]+'" y="'+q[3]+'" font-size="30" font-weight="bold" fill="#0D8B7D" text-anchor="'+q[4]+'">'+q[0]+'</text><text x="'+q[2]+'" y="'+(q[3]+16)+'" font-size="10" font-weight="bold" fill="#0D5E4B" text-anchor="'+q[4]+'">'+q[1].toUpperCase()+'</text>';
+  });
+  pts.forEach(function(p, i){
+    var r = 16 + Math.min(1, p.v.mag/110) * (R-26), a = P(p.v.ang, r);
+    if (!p.big){ var j=((i*37)%11-5)*0.9; a[0]+=j; a[1]-=((i*53)%11-5)*0.9; }
+    s+='<circle cx="'+a[0].toFixed(1)+'" cy="'+a[1].toFixed(1)+'" r="'+(p.big?7:4.5)+'" fill="'+(p.color||'#0D5E4B')+'" fill-opacity="'+(p.big?1:.75)+'"><title>'+esc(p.label||'')+'</title></circle>';
+    if (p.big && p.label) s+='<text x="'+(a[0]+10)+'" y="'+(a[1]+4)+'" font-size="12" font-weight="bold" fill="#1A1A1A">'+esc(p.label)+'</text>';
+  });
+  return s+'</svg>';
+}
+function renderRuedaCons(D){
+  $('chRueda').innerHTML = svgRueda(D.map(function(x){ return {v:x.tp.vector, label:x.datos.nombre+' '+x.datos.apellido+' · '+(x.tp.t1?x.tp.t1.nombre:'')}; }), {});
+  var c = {}; D.forEach(function(x){ if (x.tp.t1) c[x.tp.t1.id]=(c[x.tp.t1.id]||0)+1; });
+  $('tblTipos').innerHTML = '<table class="tbl"><thead><tr><th>Tipo de puesto afín</th><th class="num">Personas</th><th class="num">%</th></tr></thead><tbody>'+
+    (TXT.tiposPuesto||[]).map(function(t){ var n=c[t.id]||0; return '<tr><td>'+t.n+'. '+esc(t.nombre)+'</td><td class="num">'+n+'</td><td class="num">'+(D.length?Math.round(100*n/D.length):0)+'%</td></tr>'; }).join('')+'</tbody></table>';
+  var a = {}; D.forEach(function(x){ x.al.forEach(function(z){ a[z.clave]=(a[z.clave]||[]); a[z.clave].push(x); }); });
+  var ks = Object.keys(a);
+  $('tblAlertas').innerHTML = ks.length ? '<table class="tbl"><thead><tr><th>Alerta</th><th class="num">Personas</th><th>Quiénes</th></tr></thead><tbody>'+ks.map(function(k){ var L=a[k]; return '<tr><td>'+esc(L[0].al.filter(function(z){return z.clave===k;})[0].tipo)+' ('+k+')</td><td class="num">'+L.length+'</td><td>'+L.slice(0,12).map(function(x){return esc(x.datos.nombre+' '+x.datos.apellido);}).join(', ')+(L.length>12?'…':'')+'</td></tr>'; }).join('')+'</tbody></table><div class="src">Ambivalencia: D y C al mismo nivel en el perfil Normal (alta si ambos sobre 50, baja si ambos bajo 50). Rigidez: D y S al mismo nivel.</div>' : '<p style="margin:0">Ninguna persona del grupo filtrado presenta ambivalencia (D = C) ni rigidez (D = S).</p>';
+}
+
+/* ---------------- ajuste al puesto ---------------- */
+var AJ = {ideal:null, t1:null, t2:null, nombre:'', filt:{}, fh:[]};
+function tipoPorId(id){ return (TXT.tiposPuesto||[]).filter(function(t){return t.id===id;})[0]; }
+function initAjuste(){
+  if (!AJ.init){
+    AJ.init = true;
+    $('ajRol').innerHTML = TXT.rolesRetail.map(function(r){ var a=tipoPorId(r.t1), b=tipoPorId(r.t2); return '<option value="'+r.id+'">'+esc(r.nombre)+' · '+a.nombre+' / '+b.nombre+'</option>'; }).join('');
+    AJ.fh = TXT.factorHumano.conductas.map(function(){ return ''; });
+    $('fhTabla').innerHTML = TXT.factorHumano.conductas.map(function(c,i){ return '<tr><td class="n">'+c[0]+'</td><td>'+esc(c[2])+'</td><td><select data-i="'+i+'"><option value="">–</option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></td></tr>'; }).join('');
+    $('ajOrigen').onchange = function(){ var v=this.value; $('ajRetail').hidden=v!=='retail'; $('ajGuardado').hidden=v!=='guardado'; $('ajNuevo').hidden=v!=='nuevo'; calcIdeal(); };
+    $('ajRol').onchange = $('ajPerf').onchange = calcIdeal;
+    $('fhTabla').onchange = function(e){ AJ.fh[+e.target.getAttribute('data-i')] = e.target.value; calcIdeal(); };
+    $('fhGuardar').onclick = guardarFH;
+    $('ajFiltros').onchange = function(e){ var d=e.target.getAttribute('data-dim'); if(e.target.value) AJ.filt[d]=e.target.value; else delete AJ.filt[d]; renderAjuste(); };
+    $('ajCsv').onclick = csvAjuste;
+  }
+  $('ajPerf').innerHTML = PERFILES.length ? PERFILES.map(function(p,i){ return '<option value="'+i+'">'+esc(p.id+' · '+p.nombre+(p.puesto?' · '+p.puesto:''))+'</option>'; }).join('') : '<option value="">No hay perfiles guardados</option>';
+  $('ajFiltros').innerHTML = [['empresa','Empresa'],['area','Área'],['puesto','Puesto'],['sede','Sede'],['nivel','Nivel']].map(function(d){
+    var vals = uniq(DATA.map(function(x){return x.datos[d[0]]||'Sin dato';}));
+    return '<div class="f"><label>'+d[1]+'</label><select data-dim="'+d[0]+'"><option value="">Todos</option>'+vals.map(function(v){return '<option'+(AJ.filt[d[0]]===v?' selected':'')+'>'+esc(v)+'</option>';}).join('')+'</select></div>';
+  }).join('');
+  calcIdeal();
+}
+function calcIdeal(){
+  var o = $('ajOrigen').value; AJ.ideal = null; var info = '';
+  if (o==='retail'){
+    var r = TXT.rolesRetail.filter(function(x){return x.id===$('ajRol').value;})[0];
+    AJ.ideal = cleaverPlantilla(r.t1); AJ.t1 = r.t1; AJ.t2 = r.t2; AJ.nombre = r.nombre; info = 'Plantilla EREA del tipo '+tipoPorId(r.t1).nombre+' (1º) con '+tipoPorId(r.t2).nombre+' como 2º tipo aceptable.';
+  } else if (o==='guardado'){
+    var p = PERFILES[+$('ajPerf').value];
+    if (p){ AJ.ideal = p.G; AJ.t1 = p.tipo1; AJ.t2 = p.tipo2; AJ.nombre = p.nombre; info = esc(p.origen)+(p.evaluador?' · evaluado por '+esc(p.evaluador):''); }
+  } else {
+    var c = {}; AJ.fh.forEach(function(v){ if(v) c[v]=(c[v]||0)+1; });
+    var exp = TXT.factorHumano.distribucion;
+    $('fhDist').innerHTML = ['5','4','3','2','1'].map(function(k){ var n=c[k]||0, ok=n===exp[k]; return '<span class="'+(ok?'ok':(n>exp[k]?'bad':''))+'">'+k+': '+n+' de '+exp[k]+'</span>'; }).join('');
+    if (AJ.fh.every(function(v){return v;})){
+      var fh = cleaverFactorHumano(AJ.fh.map(Number));
+      if (!fh.distribucionOk) info = '<span class="err">La distribución no es 5-5-4-5-5. Revise los valores.</span>';
+      else { AJ.ideal = fh.G; var tp = cleaverTipoPuesto(fh.G); AJ.t1 = tp.t1&&tp.t1.id; AJ.t2 = tp.t2&&tp.t2.id; AJ.nombre = $('fhNombre').value || 'Perfil Factor Humano';
+        info = 'R: D '+fh.R.D+' · I '+fh.R.I+' · S '+fh.R.S+' · C '+fh.R.C+' · A = '+fh.A+' · múltiplo '+fh.mult+(fh.plano?' · <b>Perfil plano: revisar la hoja</b>':''); }
+    } else info = 'Complete las 24 conductas para calcular el perfil.';
+  }
+  $('ajIdeal').innerHTML = AJ.ideal ? '<div class="sec"><h3 style="margin-top:14px">Perfil ideal · '+esc(AJ.nombre)+'</h3><div style="max-width:300px">'+svgProfile(AJ.ideal,true)+'</div><p style="font-size:12px">'+info+'</p><p style="font-size:13px"><b>Tipo de puesto:</b> '+(AJ.t1?tipoPorId(AJ.t1).n+'. '+tipoPorId(AJ.t1).nombre:'')+(AJ.t2?' (2º: '+tipoPorId(AJ.t2).nombre+')':'')+'</p></div>' : '<p style="font-size:12px;margin-top:12px">'+info+'</p>';
+  renderAjuste();
+}
+function guardarFH(){
+  if (!AJ.ideal || $('ajOrigen').value!=='nuevo'){ $('fhMsg').textContent='Complete el formulario primero.'; return; }
+  $('fhMsg').textContent = 'Guardando…';
+  var url = ls('erea_panel_url') || $('inUrl').value.trim(), tok = ls('erea_panel_tok') || $('inTok').value.trim();
+  fetch(url, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({action:'guardarPerfil', token: tok, perfil:{nombre:$('fhNombre').value, puesto:$('fhPuesto').value, area:$('fhArea').value, evaluador:$('fhEval').value, valores:AJ.fh.map(Number)}})})
+   .then(function(r){return r.json();}).then(function(j){
+     if (!j.ok) throw new Error(j.error);
+     PERFILES.push({id:j.id, nombre:$('fhNombre').value, origen:'Factor Humano', puesto:$('fhPuesto').value, area:$('fhArea').value, evaluador:$('fhEval').value, G:j.G, tipo1:j.tipo1, tipo2:j.tipo2});
+     $('fhMsg').textContent = 'Guardado como ' + j.id + '.';
+   }).catch(function(e){ $('fhMsg').textContent = 'No se pudo guardar: ' + e.message; });
+}
+function ajFiltered(){ return DATA.filter(function(x){ for (var k in AJ.filt) if ((x.datos[k]||'Sin dato')!==AJ.filt[k]) return false; return true; }); }
+function renderAjuste(){
+  if (!AJ.ideal){ $('ajKpis').innerHTML=''; $('ajRueda').innerHTML=''; $('ajTabla').innerHTML='<p>Defina el perfil ideal para ver el ajuste.</p>'; return; }
+  var D = ajFiltered().map(function(x){ var a = cleaverAjuste(x.r.normal, AJ.ideal); return {x:x, a:a, tipo:x.tp.t1?x.tp.t1.id:''}; });
+  D.sort(function(p,q){ return p.a.mad - q.a.mad; });
+  var c = {Alto:0, Medio:0, Bajo:0}; D.forEach(function(p){ c[p.a.nivel]++; });
+  $('ajKpis').innerHTML = '<div class="kpi"><div class="l">Comparados</div><div class="v">'+D.length+'</div></div>' + ['Alto','Medio','Bajo'].map(function(k){ return '<div class="kpi'+(k==='Alto'?' acc':'')+'"><div class="l">Ajuste '+k.toLowerCase()+'</div><div class="v">'+c[k]+'</div><div class="n">'+(D.length?Math.round(100*c[k]/D.length):0)+'%</div></div>'; }).join('');
+  var col = {Alto:'#2DBA85', Medio:'#F4A833', Bajo:'#B4543A'};
+  $('ajRueda').innerHTML = svgRueda(D.map(function(p){ return {v:p.x.tp.vector, label:p.x.datos.nombre+' '+p.x.datos.apellido+' · ajuste '+p.a.nivel.toLowerCase(), color:col[p.a.nivel]}; }), {t1:AJ.t1, t2:AJ.t2}) +
+    '<div class="src">Sector oscuro: tipo de puesto ideal (1º). Sector claro: 2º tipo aceptable. Color del punto: verde ajuste alto, ámbar medio, terracota bajo.</div>';
+  AJ.rows = D;
+  $('ajTabla').innerHTML = '<table class="tbl"><thead><tr><th>Persona</th><th>Área</th><th>Puesto</th><th>Tipo afín</th>'+F.map(function(f){return '<th class="num">'+f+' (ideal '+AJ.ideal[f]+')</th>';}).join('')+'<th class="num">Dif. prom.</th><th>Factores en contra</th><th>Ajuste</th></tr></thead><tbody>'+
+    D.map(function(p,i){ var x=p.x, t=x.tp.t1, coinc = p.tipo===AJ.t1 ? ' ✓' : (p.tipo===AJ.t2 ? ' (2º)' : '');
+      return '<tr class="click" data-i="'+i+'"><td>'+esc(x.datos.nombre+' '+x.datos.apellido)+'</td><td>'+esc(x.datos.area)+'</td><td>'+esc(x.datos.puesto)+'</td><td>'+(t?esc(t.nombre)+coinc:'')+'</td>'+F.map(function(f){return '<td class="num">'+x.r.normal[f]+'</td>';}).join('')+'<td class="num">'+p.a.mad+'</td><td>'+(p.a.choques.join(', ')||'—')+'</td><td><span class="tag '+p.a.nivel.toLowerCase()+'">'+p.a.nivel+'</span></td></tr>'; }).join('')+'</tbody></table>';
+}
+$('ajTabla').onclick = function(e){ var tr=e.target.closest('tr[data-i]'); if(!tr)return; showReports([AJ.rows[+tr.getAttribute('data-i')].x]); };
+function csvAjuste(){
+  var rows = [['perfil_ideal','folio','nombre','apellido','area','puesto','tipo_afin'].concat(F.map(function(f){return f+'_persona';}), F.map(function(f){return f+'_ideal';}), ['dif_promedio','factores_en_contra','ajuste'])];
+  (AJ.rows||[]).forEach(function(p){ var x=p.x; rows.push([AJ.nombre, x.folio, x.datos.nombre, x.datos.apellido, x.datos.area, x.datos.puesto, x.tp.t1?x.tp.t1.nombre:''].concat(F.map(function(f){return x.r.normal[f];}), F.map(function(f){return AJ.ideal[f];}), [p.a.mad, p.a.choques.join(' '), p.a.nivel])); });
+  var csv = '﻿' + rows.map(function(r){return r.map(function(v){v=v==null?'':String(v);return /[";\n,]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(',');}).join('\n');
+  var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download = 'CLEAVER_ajuste_puesto.csv'; a.click();
+}
+</script>
+</body>
+</html>

@@ -268,6 +268,7 @@ input,select{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(-
 </main>
 
 <script>
+var CENSO_TXT = {NO_CENSO:'DNI no está en el censo', EMPRESA:'Empresa distinta a la del censo', DNI:'DNI con formato inválido'};
 var DEFAULT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxMIvPA7zGmdQX6znRkzwPTxLkPpagxlWP2YUjGA4pEo1bw03BCgJEWvLCZVRxPIs_l/exec';
 var F = ['D','I','S','C'];
 var FN = {D:'Dominio',I:'Influencia',S:'Constancia',C:'Apego'};
@@ -491,7 +492,7 @@ function cargar(){
      TXT = j.textos; CLEAVER = j.textos; PERFILES = j.perfiles || [];
      DATA.forEach(function(x){ x.tp = cleaverTipoPuesto(x.r.normal); x.al = cleaverAlertas(x.r.normal); x.calidad = cleaverCalidad(x.duracionMin); });
      var vistosId = {}; DATA.forEach(function(x){ var id = String(x.datos.identidad||'').trim(); x.idRep = ''; if (!id) return; if (vistosId[id]) x.idRep = vistosId[id]; else vistosId[id] = x.folio; });
-     DATA.forEach(function(x){ x.alq = []; if (x.calidad) x.alq.push('Respuesta rápida'); if (x.idRep) x.alq.push('ID repetido'); });
+     DATA.forEach(function(x){ x.alq = []; if (x.calidad) x.alq.push('Respuesta rápida'); if (x.idRep) x.alq.push('ID repetido'); if (x.censo) x.alq.push(CENSO_TXT[x.censo] || x.censo); });
      $('hdrSub').textContent = DATA.length + ' respuestas · actualizado ' + new Date(j.generado).toLocaleString('es-HN');
      $('vLogin').hidden = true; $('tabs').hidden = false;
      buildFilters(); tab('consolidado');
@@ -628,6 +629,7 @@ function reportHTML(x){
     .map(function(p){return '<div class="c'+(p[0]==='normal'?' main':'')+'"><div class="ct">'+p[1]+'</div><div class="cs">'+p[2]+'</div>'+svgProfile(r[p[0]],p[0]==='normal')+'<div class="cb"><b>'+p[3].clave+'</b> · '+esc(p[3].tipo)+'</div></div>';}).join('') + '</div><div class="src">Percentiles de 0 a 100. La línea punteada marca el 50: por encima, el factor es alto; por debajo, bajo.</div></div>';
   var it = TXT.interp[cn.clave] || {};
   if (x.calidad) h += '<div class="alerta r"><b>Alerta de calidad · Respuesta rápida.</b> '+esc(x.calidad.desc)+'</div>';
+  if (x.censo) h += '<div class="alerta r"><b>Alerta de datos · '+esc(CENSO_TXT[x.censo] || x.censo)+'.</b> Revise el número de identidad contra el censo de la empresa. Mientras no se corrija, el código, área, puesto, sede, nivel, edad, género y antigüedad de esta persona pueden quedar vacíos.</div>';
   if (x.idRep) h += '<div class="alerta r"><b>Alerta de calidad · ID repetido.</b> Esta identidad ya había respondido con el folio '+esc(x.idRep)+'. Confirmar cuál registro es válido.</div>';
   h += alertasHTML(x.al);
   h += '<div class="sec"><h3>Interpretación del perfil Normal · '+esc(cn.tipo)+' ('+cn.clave+')</h3>'+(it.matriz?'<div>'+it.matriz.split(' · ').map(function(k){return '<span class="chip">'+esc(k)+'</span>';}).join('')+'</div>':'')+
@@ -706,11 +708,12 @@ function renderRuedaCons(D){
     (TXT.tiposPuesto||[]).map(function(t){ var n=c[t.id]||0; return '<tr><td>'+t.n+'. '+esc(t.nombre)+'</td><td class="num">'+n+'</td><td class="num">'+(D.length?Math.round(100*n/D.length):0)+'%</td></tr>'; }).join('')+'</tbody></table>';
   var a = {}; D.forEach(function(x){ x.al.forEach(function(z){ a[z.clave]=(a[z.clave]||[]); a[z.clave].push(x); }); });
   var ks = Object.keys(a);
-  var rap = D.filter(function(x){return x.calidad;}), rep = D.filter(function(x){return x.idRep;});
+  var rap = D.filter(function(x){return x.calidad;}), rep = D.filter(function(x){return x.idRep;}), cen = D.filter(function(x){return x.censo;});
   var q = '<table class="tbl" style="margin-bottom:12px"><thead><tr><th>Calidad de respuesta</th><th class="num">Personas</th><th>Quiénes</th></tr></thead><tbody>'+
     '<tr><td>Respuesta rápida (menos de '+CLEAVER_MIN_MINUTOS+' min)</td><td class="num">'+rap.length+'</td><td>'+(rap.map(function(x){return esc(x.datos.nombre+' '+x.datos.apellido)+' ('+String(x.calidad.min).replace('.',',')+' min)';}).join(', ')||'—')+'</td></tr>'+
-    '<tr><td>ID repetido</td><td class="num">'+rep.length+'</td><td>'+(rep.map(function(x){return esc(x.folio+' repite '+x.idRep);}).join(', ')||'—')+'</td></tr></tbody></table>'+
-    '<div class="src" style="margin:-6px 0 12px">Respuesta rápida: completó el cuestionario en menos de '+CLEAVER_MIN_MINUTOS+' minutos; validar el resultado antes de usarlo. ID repetido: la misma identidad respondió más de una vez; normalmente se conserva el primer registro.</div>';
+    '<tr><td>ID repetido</td><td class="num">'+rep.length+'</td><td>'+(rep.map(function(x){return esc(x.folio+' repite '+x.idRep);}).join(', ')||'—')+'</td></tr>'+
+    '<tr><td>Censo (DNI no encontrado, empresa distinta o DNI inválido)</td><td class="num">'+cen.length+'</td><td>'+(cen.map(function(x){return esc(x.folio+' '+x.datos.nombre+' '+x.datos.apellido+' ('+(CENSO_TXT[x.censo]||x.censo)+')');}).join(', ')||'—')+'</td></tr></tbody></table>'+
+    '<div class="src" style="margin:-6px 0 12px">Respuesta rápida: completó el cuestionario en menos de '+CLEAVER_MIN_MINUTOS+' minutos; validar el resultado antes de usarlo. ID repetido: la misma identidad respondió más de una vez; normalmente se conserva el primer registro. Censo: corregir el DNI o completar el censo para tener área, puesto y nivel.</div>';
   $('tblAlertas').innerHTML = q + (ks.length ? '<table class="tbl"><thead><tr><th>Alerta</th><th class="num">Personas</th><th>Quiénes</th></tr></thead><tbody>'+ks.map(function(k){ var L=a[k]; return '<tr><td>'+esc(L[0].al.filter(function(z){return z.clave===k;})[0].tipo)+' ('+k+')</td><td class="num">'+L.length+'</td><td>'+L.slice(0,12).map(function(x){return esc(x.datos.nombre+' '+x.datos.apellido);}).join(', ')+(L.length>12?'…':'')+'</td></tr>'; }).join('')+'</tbody></table><div class="src">Ambivalencia: D y C al mismo nivel en el perfil Normal (alta si ambos sobre 50, baja si ambos bajo 50). Rigidez: D y S al mismo nivel.</div>' : '<p style="margin:0">Ninguna persona del grupo filtrado presenta ambivalencia (D = C) ni rigidez (D = S).</p>');
 }
 
